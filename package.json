@@ -23,7 +23,7 @@
     "@encointer/util": "^0.14.0",
     "@subsquid/archive-registry": "1.0.18",
     "@subsquid/big-decimal": "^0.0.0",
-    "@subsquid/cli": "2.11.0",
+    "@subsquid/cli": "2.13.0",
     "@subsquid/graphql-server": "3.3.2",
     "@subsquid/ss58": "^0.1.2",
     "@subsquid/substrate-processor": "2.4.1",
