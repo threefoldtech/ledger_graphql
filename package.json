@@ -30,7 +30,7 @@
     "@subsquid/typeorm-migration": "0.1.6",
     "@subsquid/typeorm-store": "0.2.2",
     "axios": "^0.28.1",
-    "dotenv": "^16.0.0",
+    "dotenv": "^16.4.7",
     "ipaddr.js": "^2.2.0",
     "lodash": "^4.17.21",
     "pg": "^8.7.3",
