@@ -37,6 +37,7 @@ export async function twinUpdated(
     savedTwin.relay = twin.relay
     savedTwin.publicKey = twin.pk
     savedTwin.gridVersion = twin.version
+    savedTwin.accountID = twin.accountID
 
     await ctx.store.save<Twin>(savedTwin)
 }
