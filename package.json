@@ -20,7 +20,7 @@
     "lint:prod": "eslint . --ext .ts --ignore-path .gitignore --max-warnings 0"
   },
   "dependencies": {
-    "@encointer/util": "^0.14.0",
+    "@encointer/util": "^0.18.2",
     "@subsquid/archive-registry": "1.0.18",
     "@subsquid/big-decimal": "^0.0.0",
     "@subsquid/cli": "2.11.0",
