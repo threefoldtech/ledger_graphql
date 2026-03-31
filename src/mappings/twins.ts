@@ -46,7 +46,7 @@ export async function twinDeleted(
     ctx: Ctx,
     item: EventItem<'TfgridModule.TwinDeleted', { event: { args: true } }>
 ) {
-    const twinDeletedEvent = new TfgridModuleTwinDeletedEvent(ctx, item.event).asV49
+    const twinDeletedEvent = new TfgridModuleTwinDeletedEvent(ctx, item.event).asV9
 
     const savedTwin: any = await ctx.store.get(Twin, { where: { twinID: twinDeletedEvent } })
     if (!savedTwin) return
@@ -105,7 +105,7 @@ export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twi
                 updatedTwins.push(savedTwin)
             }
             if (item.name === "TfgridModule.TwinDeleted") {
-                const twinDeletedEvent = new TfgridModuleTwinDeletedEvent(ctx, item.event).asV49
+                const twinDeletedEvent = new TfgridModuleTwinDeletedEvent(ctx, item.event).asV9
 
                 const savedTwin = await ctx.store.get(Twin, { where: { twinID: twinDeletedEvent } })
                 if (savedTwin) {
@@ -131,22 +131,15 @@ function getTwinCreate(
 
     const twinEvent = new TfgridModuleTwinStoredEvent(ctx, item.event)
     let twin
-    if (twinEvent.isV49) {
-        twin = twinEvent.asV49
+    if (twinEvent.isV9) {
+        twin = twinEvent.asV9
         id = item.event.id
         twinID = twin.id
         version = twin.version
         relay = validateString(ctx, twin.ip.toString())
         accountID = ss58.codec("substrate").encode(twin.accountId)
-    } else if (twinEvent.isV101) {
-        twin = twinEvent.asV101
-        id = item.event.id
-        twinID = twin.id
-        version = twin.version
-        relay = validateString(ctx, twin.ip.toString())
-        accountID = ss58.codec("substrate").encode(twin.accountId)
-    } else if (twinEvent.isV124) {
-        twin = twinEvent.asV124
+    } else if (twinEvent.isV125) {
+        twin = twinEvent.asV125
         id = item.event.id
         twinID = twin.id
         if (twin.relay) {
@@ -181,22 +174,15 @@ function getTwinUpdate(
 
     const twinEvent = new TfgridModuleTwinUpdatedEvent(ctx, item.event)
     let twin
-    if (twinEvent.isV49) {
-        twin = twinEvent.asV49
+    if (twinEvent.isV9) {
+        twin = twinEvent.asV9
         id = item.event.id
         twinID = twin.id
         version = twin.version
         relay = validateString(ctx, twin.ip.toString())
         accountID = ss58.codec("substrate").encode(twin.accountId)
-    } else if (twinEvent.isV101) {
-        twin = twinEvent.asV101
-        id = item.event.id
-        twinID = twin.id
-        version = twin.version
-        relay = validateString(ctx, twin.ip.toString())
-        accountID = ss58.codec("substrate").encode(twin.accountId)
-    } else if (twinEvent.isV124) {
-        twin = twinEvent.asV124
+    } else if (twinEvent.isV125) {
+        twin = twinEvent.asV125
         id = item.event.id
         twinID = twin.id
         if (twin.relay) {

@@ -258,8 +258,8 @@ export async function nodeContractCanceled(
     let cancel = new SmartContractModuleNodeContractCanceledEvent(ctx, item.event)
 
     let contractID = BigInt(0)
-    if (cancel.isV49) {
-        contractID = cancel.asV49[0]
+    if (cancel.isV19) {
+        contractID = cancel.asV19[0]
     } else if (cancel.isV105) {
         contractID = cancel.asV105.contractId
     }
@@ -286,8 +286,8 @@ export async function nameContractCanceled(
     const cancel = new SmartContractModuleNameContractCanceledEvent(ctx, item.event)
 
     let contractID = BigInt(0)
-    if (cancel.isV49) {
-        contractID = cancel.asV49
+    if (cancel.isV19) {
+        contractID = cancel.asV19
     } else if (cancel.isV105) {
         contractID = cancel.asV105.contractId
     }

@@ -1,3 +1,5 @@
+import type {Result, Option} from './support'
+
 export interface Contract {
     version: number
     state: ContractState

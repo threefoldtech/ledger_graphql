@@ -1,18 +1,4 @@
-export type NodeCertification = NodeCertification_Diy | NodeCertification_Certified
-
-export interface NodeCertification_Diy {
-    __kind: 'Diy'
-}
-
-export interface NodeCertification_Certified {
-    __kind: 'Certified'
-}
-
-export interface PublicConfig {
-    ip4: IP
-    ip6: (IP | undefined)
-    domain: (Domain | undefined)
-}
+import type {Result, Option} from './support'
 
 export interface Node {
     version: number
@@ -28,14 +14,8 @@ export interface Node {
     certification: NodeCertification
     secureBoot: boolean
     virtualized: boolean
-    serialNumber: (SerialNumber | undefined)
+    serialNumber: (Uint8Array | undefined)
     connectionPrice: number
-}
-
-export interface Interface {
-    name: InterfaceName
-    mac: InterfaceMac
-    ips: InterfaceIp[]
 }
 
 export interface Resources {
@@ -45,43 +25,36 @@ export interface Resources {
     mru: bigint
 }
 
-export type FarmName = Uint8Array
-
-export interface PublicIP {
-    ip: Uint8Array
-    gateway: GatewayIP
-    contractId: bigint
-}
-
-export interface IP {
-    ip: IP4
-    gw: GW4
-}
-
-export type Domain = Uint8Array
-
-export type CountryName = Uint8Array
-
-export type CityName = Uint8Array
-
-export type GatewayIP = Uint8Array
-
-export type IP4 = Uint8Array
-
-export type GW4 = Uint8Array
-
-export type SerialNumber = Uint8Array
-
-export type InterfaceName = Uint8Array
-
-export type InterfaceMac = Uint8Array
-
-export type InterfaceIp = Uint8Array
-
 export interface Location {
-    city: CityName
-    country: CountryName
+    city: Uint8Array
+    country: Uint8Array
     latitude: Uint8Array
     longitude: Uint8Array
 }
 
+export interface PublicConfig {
+    ip4: IP
+    ip6: (IP | undefined)
+    domain: (Uint8Array | undefined)
+}
+
+export interface Interface {
+    name: Uint8Array
+    mac: Uint8Array
+    ips: Uint8Array[]
+}
+
+export type NodeCertification = NodeCertification_Diy | NodeCertification_Certified
+
+export interface NodeCertification_Diy {
+    __kind: 'Diy'
+}
+
+export interface NodeCertification_Certified {
+    __kind: 'Certified'
+}
+
+export interface IP {
+    ip: Uint8Array
+    gw: Uint8Array
+}

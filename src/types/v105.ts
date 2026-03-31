@@ -1,3 +1,5 @@
+import type {Result, Option} from './support'
+
 export interface Contract {
     version: number
     state: ContractState
@@ -13,6 +15,32 @@ export interface SolutionProvider {
     description: Uint8Array
     link: Uint8Array
     approved: boolean
+}
+
+export interface PublicConfig {
+    ip4: IP
+    ip6: (IP | undefined)
+    domain: (Uint8Array | undefined)
+}
+
+export interface Node {
+    version: number
+    id: number
+    farmId: number
+    twinId: number
+    resources: Resources
+    location: Location
+    country: Uint8Array
+    city: Uint8Array
+    publicConfig: (PublicConfig | undefined)
+    created: bigint
+    farmingPolicyId: number
+    interfaces: Interface[]
+    certification: NodeCertification
+    secureBoot: boolean
+    virtualized: boolean
+    serialNumber: Uint8Array
+    connectionPrice: number
 }
 
 export type ContractState = ContractState_Created | ContractState_Deleted | ContractState_GracePeriod
@@ -49,85 +77,14 @@ export interface ContractData_RentContract {
 }
 
 export interface Provider {
-    who: AccountId32
+    who: Uint8Array
     take: number
 }
 
-export type Cause = Cause_CanceledByUser | Cause_OutOfFunds
-
-export interface Cause_CanceledByUser {
-    __kind: 'CanceledByUser'
-}
-
-export interface Cause_OutOfFunds {
-    __kind: 'OutOfFunds'
-}
-
-export interface NodeContract {
-    nodeId: number
-    deploymentHash: H256
-    deploymentData: Uint8Array
-    publicIps: number
-    publicIpsList: PublicIP[]
-}
-
-export interface NameContract {
-    name: Uint8Array
-}
-
-export interface RentContract {
-    nodeId: number
-}
-
-export type AccountId32 = Uint8Array
-
-export interface PublicIP {
-    ip: Uint8Array
-    gateway: Uint8Array
-    contractId: bigint
-}
-
-export interface Contract {
-    version: number
-    state: ContractState
-    contractId: bigint
-    twinId: number
-    contractType: ContractData
-    solutionProviderId: (bigint | undefined)
-}
-
-export interface PublicConfig {
-    ip4: IP
-    ip6: (IP | undefined)
-    domain: (Domain | undefined)
-}
-
-export interface Node {
-    version: number
-    id: number
-    farmId: number
-    twinId: number
-    resources: Resources
-    location: Location
-    country: Uint8Array
-    city: Uint8Array
-    publicConfig: (PublicConfig | undefined)
-    created: bigint
-    farmingPolicyId: number
-    interfaces: Interface[]
-    certification: NodeCertification
-    secureBoot: boolean
-    virtualized: boolean
-    serialNumber: Uint8Array
-    connectionPrice: number
-}
-
 export interface IP {
-    ip: IP4
-    gw: GW4
+    ip: Uint8Array
+    gw: Uint8Array
 }
-
-export type Domain = Uint8Array
 
 export interface Resources {
     hru: bigint
@@ -142,9 +99,9 @@ export interface Location {
 }
 
 export interface Interface {
-    name: InterfaceName
-    mac: InterfaceMac
-    ips: InterfaceIp[]
+    name: Uint8Array
+    mac: Uint8Array
+    ips: Uint8Array[]
 }
 
 export type NodeCertification = NodeCertification_Diy | NodeCertification_Certified
@@ -157,6 +114,8 @@ export interface NodeCertification_Certified {
     __kind: 'Certified'
 }
 
+export type Cause = Cause_CanceledByUser | Cause_OutOfFunds
+
 export interface Cause_CanceledByUser {
     __kind: 'CanceledByUser'
 }
@@ -167,38 +126,22 @@ export interface Cause_OutOfFunds {
 
 export interface NodeContract {
     nodeId: number
-    deploymentHash: H256
+    deploymentHash: Uint8Array
     deploymentData: Uint8Array
     publicIps: number
     publicIpsList: PublicIP[]
 }
 
 export interface NameContract {
-    name: NameContractName
+    name: Uint8Array
 }
 
 export interface RentContract {
     nodeId: number
 }
 
-export type IP4 = Uint8Array
-
-export type GW4 = Uint8Array
-
-export type InterfaceName = Uint8Array
-
-export type InterfaceMac = Uint8Array
-
-export type InterfaceIp = Uint8Array
-
-export type H256 = Uint8Array
-
 export interface PublicIP {
     ip: Uint8Array
-    gateway: GatewayIP
+    gateway: Uint8Array
     contractId: bigint
 }
-
-export type NameContractName = Uint8Array
-
-export type GatewayIP = Uint8Array
