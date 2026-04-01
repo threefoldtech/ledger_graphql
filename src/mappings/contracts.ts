@@ -199,6 +199,21 @@ export async function contractUpdated(
     if (SavedNameContract) {
         await updateNameContract(ctx, contractEvent, SavedNameContract, ctx.store)
     }
+
+    const SavedRentContract = await ctx.store.get(RentContract, { where: { contractID: contractEvent.contractId } })
+    if (SavedRentContract) {
+        await updateRentContract(ctx, contractEvent, SavedRentContract, ctx.store)
+    }
+}
+
+function parseContractState(kind: string): ContractState {
+    switch (kind) {
+        case 'Created': return ContractState.Created
+        case 'Deleted': return ContractState.Deleted
+        case 'GracePeriod': return ContractState.GracePeriod
+        case 'OutOfFunds': return ContractState.OutOfFunds
+        default: return ContractState.OutOfFunds
+    }
 }
 
 async function updateNodeContract(ctx: Ctx, ctr: any, contract: NodeContract, store: Store) {
@@ -215,16 +230,10 @@ async function updateNodeContract(ctx: Ctx, ctr: any, contract: NodeContract, st
     contract.deploymentData = validateString(ctx, parsedNodeContract.deploymentData.toString())
     contract.deploymentHash = validateString(ctx, parsedNodeContract.deploymentHash.toString())
 
-    let state = ContractState.OutOfFunds
-    switch (ctr.state.__kind) {
-        case 'Created':
-            state = ContractState.Created
-            break
-        case 'Deleted':
-            state = ContractState.Deleted
-            break
+    contract.state = parseContractState(ctr.state.__kind)
+    if (ctr.solutionProviderId !== undefined) {
+        contract.solutionProviderID = Number(ctr.solutionProviderId) || 0
     }
-    contract.state = state
     await store.save<NodeContract>(contract)
 }
 
@@ -238,17 +247,28 @@ async function updateNameContract(ctx: Ctx, ctr: any, contract: NameContract, st
     contract.twinID = ctr.twinId
     contract.name = validateString(ctx, parsedNameContract.name.toString())
 
-    let state = ContractState.OutOfFunds
-    switch (ctr.state.__kind) {
-        case 'Created':
-            state = ContractState.Created
-            break
-        case 'Deleted':
-            state = ContractState.Deleted
-            break
+    contract.state = parseContractState(ctr.state.__kind)
+    if (ctr.solutionProviderId !== undefined) {
+        contract.solutionProviderID = Number(ctr.solutionProviderId) || 0
     }
-    contract.state = state
     await store.save<NameContract>(contract)
+}
+
+async function updateRentContract(ctx: Ctx, ctr: any, contract: RentContract, store: Store) {
+    if (ctr.contractType.__kind !== "RentContract") return
+
+    const parsedRentContract = ctr.contractType.value
+
+    contract.contractID = ctr.contractId
+    contract.gridVersion = ctr.version
+    contract.twinID = ctr.twinId
+    contract.nodeID = parsedRentContract.nodeId
+
+    contract.state = parseContractState(ctr.state.__kind)
+    if (ctr.solutionProviderId !== undefined) {
+        contract.solutionProviderID = Number(ctr.solutionProviderId) || 0
+    }
+    await store.save<RentContract>(contract)
 }
 
 export async function nodeContractCanceled(
@@ -272,10 +292,12 @@ export async function nodeContractCanceled(
     savedContract.state = ContractState.Deleted
     await ctx.store.save<NodeContract>(savedContract)
 
-    const savedPublicIP = await ctx.store.get(PublicIp, { where: { contractId: contractID }, relations: { farm: true } })
-    if (savedPublicIP) {
-        savedPublicIP.contractId = BigInt(0)
-        await ctx.store.save<PublicIp>(savedPublicIP)
+    const savedPublicIPs = await ctx.store.find(PublicIp, { where: { contractId: contractID }, relations: { farm: true } })
+    for (const ip of savedPublicIPs) {
+        ip.contractId = BigInt(0)
+    }
+    if (savedPublicIPs.length > 0) {
+        await ctx.store.save(savedPublicIPs)
     }
 }
 
