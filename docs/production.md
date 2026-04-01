@@ -1,42 +1,66 @@
-# Production setup
+# Production Setup
 
 ## Requirements
 
-- Tfchain network url. (e.g. `wss://tfchain.dev.grid.tf/ws`)
+- TFChain network WebSocket URL (e.g., `wss://tfchain.dev.grid.tf/ws`)
 - Docker
-- Docker-compose
+- Docker Compose
 
-## Run the setup
+## Architecture
 
-### Indexer
+The production stack has two independent layers:
 
-Configure the `.env` file in `./indexer`
+1. **Indexer (archive)** — ingests raw blocks from a TFChain node into CockroachDB. Provides a GraphQL gateway for the processor to query block data.
+2. **Processor + Query Node** — reads events from the indexer, maps them to domain entities (nodes, farms, contracts, etc.), stores in PostgreSQL, and serves the public GraphQL API.
 
-Set the `WS_URL` to a tfchain network url.
+## Run the Setup
+
+### 1. Indexer
+
+Configure `indexer/.env`:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `WS_ENDPOINT` | TFChain node WebSocket URL | `ws://localhost:9944` |
+| `START_HEIGHT` | Block height to start ingesting from. `0` = genesis (full history). Set higher only for testing or partial deployments — the processor will miss events before this height. | `0` |
 
 ```bash
 cd indexer
-docker-compose up -d
+docker compose up -d
 ```
 
-### Processor
+See [indexer/readme.md](../indexer/readme.md) for details on the indexer stack containers.
 
-Configure the `.env` file in the root of this repository.
+### 2. Processor + Query Node
 
-Set the `WS_URL` to a tfchain network url.
+Configure `.env` in the project root:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DB_NAME` | PostgreSQL database name | `tfgrid-graphql` |
+| `DB_USER` | PostgreSQL user | `postgres` |
+| `DB_PASS` | PostgreSQL password | `postgres` |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `INDEXER_ENDPOINT_URL` | Indexer GraphQL gateway URL | `http://localhost:8888/graphql` |
+| `WS_URL` | TFChain node WebSocket URL (used for RPC calls) | `ws://localhost:9944` |
+| `TYPEORM_LOGGING` | TypeORM log level | `error` |
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
-Now the graphql endpoint is available at `http://localhost:4000/graphql`
+The GraphQL endpoint is now available at `http://localhost:4000/graphql`
 
-## Releasing
+## Reprocessing
 
-See [release process](./release_process.md)
+If a mapping bug is fixed and data needs remapping, reset the processor database and reindex:
 
-## Notes
+```bash
+docker compose down processor query-node
+./scripts/reset-db.sh
+docker compose up -d
+```
 
-### Reprocessing of indexer data
+This drops and recreates the processor's PostgreSQL database and reindexes from block 0 against the existing indexer data. The indexer does not need to be restarted — it stores raw blocks independently.
 
-Reprocessing of indexer data (running the processor) would be usefull in situation where bugs are found and the data that is mapped would need remapping. This can be done by deleting the processor data and running it from 0 again with the code changes.
+See [typeChanges.md](./typeChanges.md) for more detail on when a resync is needed.

@@ -1,35 +1,40 @@
-# Setting up an indexer
+# Setting Up an Indexer
 
-## Docker compose
+## Configuration
 
-First check `.env` file, this contains 2 variables:
+The `.env` file contains the indexer options:
 
 ```
 WS_ENDPOINT=ws://localhost:9944
 START_HEIGHT=0
 ```
 
-Set the `WS_ENDPOINT` to a URL you want to connect to. Eg `wss://tfchain.dev.grid.tf` or `ws://localhost:9944`
+| Variable | Description |
+|----------|-------------|
+| `WS_ENDPOINT` | TFChain node WebSocket URL. e.g., `wss://tfchain.dev.grid.tf` or `ws://localhost:9944` |
+| `START_HEIGHT` | Block height to start ingesting from. `0` = genesis (full history). Setting this higher skips earlier blocks — the processor will miss any events before this height. Only use non-zero values for testing or partial deployments. |
 
-Start indexer:
+## Docker Compose
+
+Start the indexer stack:
 
 ```
-docker-compose up -d
-``` 
+docker compose up -d
+```
 
 Stop:
 
 ```
-docker-compose down
+docker compose down
 ```
 
-### Docker Compose setup
+### Stack Components
 
-This stack consists of 4 containers:
+| Container | Image | Role |
+|-----------|-------|------|
+| db | `cockroachdb/cockroach` | Database for storing raw indexed block data |
+| ingest | `subsquid/substrate-ingest` | Connects to the TFChain node and ingests blocks into the database |
+| gateway | `subsquid/substrate-gateway` | GraphQL gateway over ingested data — the processor queries this |
+| explorer | `subsquid/substrate-explorer` | Web UI to browse raw ingested data and check sync status |
 
-- Cockcroach db: database for storing the indexer data
-- subsquid/substrate-ingest: the ingester program
-- subsquid/substrate-gateway: a gateway to the ingested data (graphql endpoint)
-- subsquid/substrate-explorer: a web interface to explore the raw ingester data and it's status
-
-Note on cockroach db: "The --insecure flag used in this tutorial is intended for non-production testing only. To run CockroachDB in production, use a secure cluster instead." See [official docs](https://www.cockroachlabs.com/docs/stable/deploy-cockroachdb-on-premises-insecure)
+**Note on CockroachDB:** The `--insecure` flag is used for non-production/testing only. For production, use a secure cluster. See [CockroachDB docs](https://www.cockroachlabs.com/docs/stable/deploy-cockroachdb-on-premises-insecure).

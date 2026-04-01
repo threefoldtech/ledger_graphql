@@ -1,20 +1,18 @@
-# Processor chart
+# Processor Chart
 
-## Install chart with helm
+## Install chart with Helm
 
-Create PersistentVolumeClaims for the database if wanted and reference the name in your values file in the `volume.existingpersistentVolumeClaim` property.
+Create PersistentVolumeClaims for the database if needed and reference the name in your values file in the `volume.existingpersistentVolumeClaim` property.
 
 ```sh
-cd tfchain/graphql/processor-chart
-helm install tfchainprocessor  [-f yourvaluesfile.yaml] .
+cd processor-chart
+helm install tfchainprocessor [-f yourvaluesfile.yaml] .
 ```
 
-If the processor cannot reach the database, you can set `db_url` to the db-service cluster ip.
+If the processor cannot reach the database, you can set `db_url` to the db-service cluster IP:
 
 ```sh
 kubectl get svc
 ```
 
-## NOTES
-
-take note of the IP assigned the db-service. Use this IP in `values.yaml` for the db url.
+Take note of the IP assigned to the db-service. Use this IP in `values.yaml` for the db URL.
