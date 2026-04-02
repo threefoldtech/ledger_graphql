@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, ManyToOne as ManyToOne_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
 import {Location} from "./location.model"
 import {PublicConfig} from "./publicConfig.model"
@@ -19,12 +19,15 @@ export class Node {
     @Column_("int4", {nullable: false})
     gridVersion!: number
 
+    @Index_()
     @Column_("int4", {nullable: false})
     nodeID!: number
 
+    @Index_()
     @Column_("int4", {nullable: false})
     farmID!: number
 
+    @Index_()
     @Column_("int4", {nullable: false})
     twinID!: number
 
@@ -52,6 +55,7 @@ export class Node {
     @OneToMany_(() => Interfaces, e => e.node)
     interfaces!: Interfaces[]
 
+    @Index_()
     @Column_("varchar", {length: 9, nullable: true})
     certification!: NodeCertification | undefined | null
 
