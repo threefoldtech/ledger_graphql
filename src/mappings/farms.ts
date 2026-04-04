@@ -30,6 +30,13 @@ export async function farmStored(
     } else if (farmStoredEvent.isV50) {
         farmStoredEventParsed = farmStoredEvent.asV50
     } else if (farmStoredEvent.isV63) {
+        // Workaround: existing indexer snapshots were built with an old typesBundle
+        // that had a typo "dedicatedFarm:" (trailing colon) in the Farm struct.
+        // The stored JSON has "dedicatedFarm:" as the key, but the processor expects
+        // "dedicatedFarm" (no colon). Patch with the actual value from the colon key.
+        // Remove this after all indexers are resynced with the corrected typesBundle.
+        const rawArgs = item.event.args as any
+        rawArgs.dedicatedFarm = rawArgs['dedicatedFarm:'] ?? rawArgs.dedicatedFarm ?? false
         farmStoredEventParsed = farmStoredEvent.asV63
     }
 
@@ -46,7 +53,9 @@ export async function farmStored(
     newFarm.name = validateString(ctx, farmStoredEventParsed.name.toString())
     newFarm.twinID = farmStoredEventParsed.twinId
     newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
-    newFarm.dedicatedFarm = false
+    newFarm.dedicatedFarm = 'dedicatedFarm' in farmStoredEventParsed
+        ? (farmStoredEventParsed as any).dedicatedFarm
+        : false
     newFarm.certification = FarmCertification.NotCertified
 
     newFarm.publicIPs = []
@@ -133,6 +142,9 @@ export async function farmUpdated(
     } else if (farmUpdatedEvent.isV50) {
         farmUpdatedEventParsed = farmUpdatedEvent.asV50
     } else if (farmUpdatedEvent.isV63) {
+        // Workaround: see comment in farmStored above for the dedicatedFarm colon typo.
+        const rawArgs = item.event.args as any
+        rawArgs.dedicatedFarm = rawArgs['dedicatedFarm:'] ?? rawArgs.dedicatedFarm ?? false
         farmUpdatedEventParsed = farmUpdatedEvent.asV63
         switch (farmUpdatedEvent.asV63.certification.__kind) {
             case "Gold": {
