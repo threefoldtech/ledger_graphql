@@ -2,7 +2,7 @@
 sleep 2
 echo "Set sql.conn.max_read_buffer_message_size to 32 MiB"
 
-HOSTPARAMS="--host db --insecure"
+HOSTPARAMS="--host cockroachdb --insecure"
 SQL="/cockroach/cockroach.sh sql $HOSTPARAMS"
 
 # https://github.com/threefoldtech/tfchain_graphql/issues/130#issuecomment-1689987550
