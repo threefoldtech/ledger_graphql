@@ -1,11 +1,14 @@
-version: "3.4"
+networks:
+  default:
+    name: tfgrid_bknd
+    external: true
 
 services:
   db:
-    image: postgres:16
+    image: postgres:17
     restart: always
     ports:
-      - "${DB_PORT}:5432"
+      - "127.0.0.1:${DB_PORT}:5432"
     volumes:
       - /var/lib/postgresql/data
     environment:

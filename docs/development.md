@@ -13,6 +13,14 @@ yarn build
 
 See https://github.com/threefoldtech/tfchain
 
+### Create the shared Docker network
+
+Both compose stacks use a shared external network. Create it once:
+
+```bash
+docker network create tfgrid_bknd
+```
+
 ### Run Indexer
 
 Check `indexer/.env` and adjust the websocket endpoint to your local TFChain address.
@@ -34,7 +42,15 @@ You should see TFChain blocks being processed:
 
 ### Run Processor (local, outside Docker)
 
-Check `.env` and adjust the websocket endpoint and indexer URL to your local setup.
+Check `.env` and adjust the settings. When running the processor locally (not in Docker) while the indexer runs in Docker, change `INDEXER_ENDPOINT_URL` to use the published port:
+
+```bash
+# .env — for local development (processor outside Docker):
+INDEXER_ENDPOINT_URL=http://localhost:8888/graphql
+
+# .env — for Docker deployment (processor inside Docker, shared network):
+# INDEXER_ENDPOINT_URL=http://gateway:8000/graphql
+```
 
 Start the local PostgreSQL container and run the processor:
 
