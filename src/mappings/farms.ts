@@ -3,7 +3,7 @@ import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModule
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 
 import { Ctx } from '../processor'
-import * as v63 from '../types/v63'
+
 import { validateString } from "./nodes"
 
 import * as ipaddr from 'ipaddr.js';
@@ -30,11 +30,14 @@ export async function farmStored(
     } else if (farmStoredEvent.isV50) {
         farmStoredEventParsed = farmStoredEvent.asV50
     } else if (farmStoredEvent.isV63) {
+        // Workaround: existing indexer snapshots were built with an old typesBundle
+        // that had a typo "dedicatedFarm:" (trailing colon) in the Farm struct.
+        // The stored JSON has "dedicatedFarm:" as the key, but the processor expects
+        // "dedicatedFarm" (no colon). Patch with the actual value from the colon key.
+        // Remove this after all indexers are resynced with the corrected typesBundle.
+        const rawArgs = item.event.args as any
+        rawArgs.dedicatedFarm = rawArgs['dedicatedFarm:'] ?? rawArgs.dedicatedFarm ?? false
         farmStoredEventParsed = farmStoredEvent.asV63
-    } else if (farmStoredEvent.isV101) {
-        let eventValue = item.event.args as v63.Farm
-        eventValue.dedicatedFarm = false
-        farmStoredEventParsed = farmStoredEvent.asV101
     }
 
     if (!farmStoredEventParsed) {
@@ -50,7 +53,9 @@ export async function farmStored(
     newFarm.name = validateString(ctx, farmStoredEventParsed.name.toString())
     newFarm.twinID = farmStoredEventParsed.twinId
     newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
-    newFarm.dedicatedFarm = false
+    newFarm.dedicatedFarm = 'dedicatedFarm' in farmStoredEventParsed
+        ? (farmStoredEventParsed as any).dedicatedFarm
+        : false
     newFarm.certification = FarmCertification.NotCertified
 
     newFarm.publicIPs = []
@@ -137,17 +142,11 @@ export async function farmUpdated(
     } else if (farmUpdatedEvent.isV50) {
         farmUpdatedEventParsed = farmUpdatedEvent.asV50
     } else if (farmUpdatedEvent.isV63) {
-        let eventValue = item.event.args as v63.Farm
-        eventValue.dedicatedFarm = false
+        // Workaround: see comment in farmStored above for the dedicatedFarm colon typo.
+        const rawArgs = item.event.args as any
+        rawArgs.dedicatedFarm = rawArgs['dedicatedFarm:'] ?? rawArgs.dedicatedFarm ?? false
         farmUpdatedEventParsed = farmUpdatedEvent.asV63
-        switch (farmUpdatedEvent.asV101.certification.__kind) {
-            case "Gold": {
-                certification = FarmCertification.Gold
-            }
-        }
-    } else if (farmUpdatedEvent.isV101) {
-        farmUpdatedEventParsed = farmUpdatedEvent.asV101
-        switch (farmUpdatedEvent.asV101.certification.__kind) {
+        switch (farmUpdatedEvent.asV63.certification.__kind) {
             case "Gold": {
                 certification = FarmCertification.Gold
             }
@@ -230,7 +229,7 @@ export async function farmDeleted(
     ctx: Ctx,
     item: EventItem<'TfgridModule.FarmDeleted', { event: { args: true } }>
 ) {
-    const farmID = new TfgridModuleFarmDeletedEvent(ctx, item.event).asV49
+    const farmID = new TfgridModuleFarmDeletedEvent(ctx, item.event).asV9
 
     const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
 
@@ -244,7 +243,7 @@ export async function farmPayoutV2AddressRegistered(
     ctx: Ctx,
     item: EventItem<'TfgridModule.FarmPayoutV2AddressRegistered', { event: { args: true } }>
 ) {
-    const [farmID, stellarAddress] = new TfgridModuleFarmPayoutV2AddressRegisteredEvent(ctx, item.event).asV49
+    const [farmID, stellarAddress] = new TfgridModuleFarmPayoutV2AddressRegisteredEvent(ctx, item.event).asV9
 
     const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
 

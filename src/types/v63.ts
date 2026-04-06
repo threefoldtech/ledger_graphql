@@ -1,3 +1,5 @@
+import type {Result, Option} from './support'
+
 export type FarmCertification = FarmCertification_NotCertified | FarmCertification_Gold
 
 export interface FarmCertification_NotCertified {
@@ -18,15 +20,6 @@ export interface Farm {
     publicIps: PublicIP[]
     dedicatedFarm: boolean
     farmingPolicyLimits: (FarmingPolicyLimit | undefined)
-}
-
-export interface FarmingPolicyLimit {
-    farmingPolicyId: number
-    cu: (bigint | undefined)
-    su: (bigint | undefined)
-    end: (bigint | undefined)
-    nodeCount: (number | undefined)
-    nodeCertification: boolean
 }
 
 export interface FarmingPolicy {
@@ -73,7 +66,6 @@ export interface Node {
     secureBoot: boolean
     virtualized: boolean
     serialNumber: Uint8Array
-    dedicated: boolean
     connectionPrice: number
 }
 
@@ -81,6 +73,15 @@ export interface PublicIP {
     ip: Uint8Array
     gateway: Uint8Array
     contractId: bigint
+}
+
+export interface FarmingPolicyLimit {
+    farmingPolicyId: number
+    cu: (bigint | undefined)
+    su: (bigint | undefined)
+    end: (bigint | undefined)
+    nodeCount: (number | undefined)
+    nodeCertification: boolean
 }
 
 export interface Resources {
