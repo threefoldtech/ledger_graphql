@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
 import {DiscountLevel} from "./_discountLevel"
 
@@ -11,6 +11,7 @@ export class ContractBillReport {
     @PrimaryColumn_()
     id!: string
 
+    @Index_()
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     contractID!: bigint
 
@@ -20,6 +21,7 @@ export class ContractBillReport {
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     amountBilled!: bigint
 
+    @Index_()
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     timestamp!: bigint
 }

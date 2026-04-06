@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_} from "typeorm"
 
 @Entity_()
 export class Twin {
@@ -12,6 +12,7 @@ export class Twin {
     @Column_("int4", {nullable: false})
     gridVersion!: number
 
+    @Index_()
     @Column_("int4", {nullable: false})
     twinID!: number
 

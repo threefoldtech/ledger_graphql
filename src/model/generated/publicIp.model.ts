@@ -18,6 +18,7 @@ export class PublicIp {
     @Column_("text", {nullable: false})
     gateway!: string
 
+    @Index_()
     @Column_("text", {nullable: false})
     ip!: string
 

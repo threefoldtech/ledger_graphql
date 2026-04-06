@@ -9,7 +9,7 @@ type Entity @entity {
 
 type Twin @entity {
   gridVersion: Int!
-  twinID: Int!
+  twinID: Int! @index
   accountID: String!
   relay: String
   publicKey: String
@@ -23,28 +23,28 @@ type EntityProof @entity {
 
 type Farm @entity {
   gridVersion: Int!
-  farmID: Int!
-  name: String!
-  twinID: Int!
+  farmID: Int! @index
+  name: String! @index
+  twinID: Int! @index
   pricingPolicyID: Int!
   certification: FarmCertification
   publicIPs: [PublicIp!] @derivedFrom(field: "farm")
   stellarAddress: String
-  dedicatedFarm: Boolean
+  dedicatedFarm: Boolean @index
 }
 
 type PublicIp @entity {
   farm: Farm!
   gateway: String!
-  ip: String!
+  ip: String! @index
   contractId: BigInt!
 }
 
 type Node @entity {
   gridVersion: Int!
-  nodeID: Int!
-  farmID: Int!
-  twinID: Int!
+  nodeID: Int! @index
+  farmID: Int! @index
+  twinID: Int! @index
   location: Location!
   country: String
   city: String
@@ -54,7 +54,7 @@ type Node @entity {
   created: Int!
   farmingPolicyId: Int!
   interfaces: [Interfaces!] @derivedFrom(field: "node")
-  certification: NodeCertification
+  certification: NodeCertification @index
   secure: Boolean
   virtualized: Boolean
   serialNumber: String
@@ -156,13 +156,13 @@ type City @entity {
 
 type NodeContract @entity {
   gridVersion: Int!
-  contractID: BigInt!
-  twinID: Int!
-  nodeID: Int!
+  contractID: BigInt! @index
+  twinID: Int! @index
+  nodeID: Int! @index
   deploymentData: String!
   deploymentHash: String!
   numberOfPublicIPs: Int!
-  state: ContractState!
+  state: ContractState! @index
   resourcesUsed: ContractResources
   createdAt: BigInt!
   solutionProviderID: Int
@@ -178,20 +178,20 @@ type ContractResources @entity {
 
 type NameContract @entity {
   gridVersion: Int!
-  contractID: BigInt!
-  twinID: Int!
+  contractID: BigInt! @index
+  twinID: Int! @index
   name: String!
-  state: ContractState!
+  state: ContractState! @index
   createdAt: BigInt!
   solutionProviderID: Int
 }
 
 type RentContract @entity {
   gridVersion: Int!
-  contractID: BigInt!
-  twinID: Int!
-  nodeID: Int!
-  state: ContractState!
+  contractID: BigInt! @index
+  twinID: Int! @index
+  nodeID: Int! @index
+  state: ContractState! @index
   createdAt: BigInt!
   solutionProviderID: Int
 }
@@ -224,10 +224,10 @@ type NruConsumption @entity {
 }
 
 type ContractBillReport @entity {
-  contractID: BigInt!
+  contractID: BigInt! @index
   discountReceived: DiscountLevel!
   amountBilled: BigInt!
-  timestamp: BigInt!
+  timestamp: BigInt! @index
 }
 
 enum DiscountLevel {
@@ -256,9 +256,9 @@ type FarmingPolicy @entity {
 }
 
 type UptimeEvent @entity {
-  nodeID: Int!
+  nodeID: Int! @index
   uptime: BigInt!
-  timestamp: BigInt!
+  timestamp: BigInt! @index
 }
 
 type MintTransaction @entity {
