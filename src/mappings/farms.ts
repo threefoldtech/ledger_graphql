@@ -62,14 +62,14 @@ export async function farmStored(
 
     await ctx.store.save<Farm>(newFarm)
 
-    const ipPromises = farmStoredEventParsed.publicIps.map(ip => {
+    const ipPromises = farmStoredEventParsed.publicIps.map((ip, index) => {
         if (!checkIPs(ctx, ip.ip.toString(), ip.gateway.toString())) {
             return Promise.resolve()
         }
 
         const newIP = new PublicIp()
 
-        newIP.id = item.event.id
+        newIP.id = item.event.id + '-' + index
 
         newIP.ip = validateString(ctx, ip.ip.toString())
         newIP.gateway = validateString(ctx, ip.gateway.toString())
@@ -170,26 +170,27 @@ export async function farmUpdated(
     savedFarm.certification = certification
 
     let eventPublicIPs = farmUpdatedEventParsed.publicIps
-    farmUpdatedEventParsed.publicIps.forEach(async ip => {
+    for (let index = 0; index < farmUpdatedEventParsed.publicIps.length; index++) {
+        const ip = farmUpdatedEventParsed.publicIps[index]
         if (!checkIPs(ctx, ip.ip.toString(), ip.gateway.toString())) {
-            return
+            continue
         }
         if (ip.ip.toString().indexOf('\x00') >= 0) {
-            return
+            continue
         }
         const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() }, relations: { farm: true } })
-        // ip is already there in storage, don't save it again
         if (savedIP) {
-            savedIP.ip = validateString(ctx, ip.ip.toString()) // not effective, but for since we already check for \x00
-            savedIP.gateway = validateString(ctx, ip.gateway.toString())
             if (savedIP.farm.id !== savedFarm.id) {
-                ctx.log.error({ eventName: item.name, ip: ip.ip.toString() }, `PublicIP: ${ip.ip.toString()} already exists on farm: ${savedIP.farm.farmID}, skiped adding it to farm with ID: ${savedFarm.farmID}`);
+                ctx.log.error({ eventName: item.name, ip: ip.ip.toString() }, `PublicIP: ${ip.ip.toString()} already exists on farm: ${savedIP.farm.farmID}, skipped adding it to farm with ID: ${savedFarm.farmID}`);
+                continue
             }
+            // Same farm — update gateway
+            savedIP.gateway = validateString(ctx, ip.gateway.toString())
+            savedIP.contractId = ip.contractId
             await ctx.store.save<PublicIp>(savedIP)
         } else {
-
             const newIP = new PublicIp()
-            newIP.id = item.event.id
+            newIP.id = item.event.id + '-' + index
             newIP.ip = validateString(ctx, ip.ip.toString())
             newIP.gateway = validateString(ctx, ip.gateway.toString())
             newIP.contractId = ip.contractId
@@ -201,21 +202,18 @@ export async function farmUpdated(
             savedFarm.publicIPs.push(newIP)
             ctx.log.debug({ eventName: item.name, ip: ip.ip.toString() }, `PublicIP: ${ip.ip.toString()} added with farm id: ${savedFarm.farmID}`);
         }
-    })
+    }
 
     await ctx.store.save<Farm>(savedFarm)
 
     const publicIPsOfFarm = await ctx.store.find<PublicIp>(PublicIp, { where: { farm: { id: savedFarm.id } }, relations: { farm: true } })
-    publicIPsOfFarm.forEach(async ip => {
+    for (const ip of publicIPsOfFarm) {
         if (eventPublicIPs.filter(eventIp => validateString(ctx, eventIp.ip.toString()) === ip.ip).length === 0) {
             // IP got removed from farm
             await ctx.store.remove<PublicIp>(ip)
-            // remove ip from savedFarm.publicIPs
-            // savedFarm.publicIPs = savedFarm.publicIPs.filter(savedIP => savedIP.id !== ip.id)
-            // TODO: check if we need this code above? or Cascade delete involving here?
             ctx.log.debug({ eventName: item.name, ip: ip.ip.toString() }, `PublicIP: ${ip.ip.toString()} in farm: ${savedFarm.farmID} removed from publicIPs`);
         }
-    })
+    }
 
     let farm = item.event.args as Farm
     if (farm.dedicatedFarm) {
