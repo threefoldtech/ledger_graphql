@@ -14,9 +14,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: "yarn"
-          cache-dependency-path: "**/yarn.lock"
+          cache: "npm"
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
       - name: Build
-        run: yarn build
+        run: npm run build

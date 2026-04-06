@@ -39,7 +39,7 @@ See [docs](./docs/readme.md)
     - [development.md](./docs/development.md) - Local development setup
     - [production.md](./docs/production.md) - Production deployment
     - [release_process.md](./docs/release_process.md) - Release workflow
-- `schema.graphql` - GraphQL schema — changes here regenerate `src/model/` via `yarn codegen`
+- `schema.graphql` - GraphQL schema — changes here regenerate `src/model/` via `npm run codegen`
 - `Makefile` - Common tasks: `typegen`, `typegen-add`, `typegen-seed`, `version-bump`
 - `processor-chart/` - Helm chart for processor + query node deployment
 - `indexer/chart/` - Helm chart for indexer stack deployment

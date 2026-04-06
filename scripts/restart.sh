@@ -1,7 +1,7 @@
 set -e
 
-yarn build
+npm run build
 docker-compose down
-yarn db:up
+npm run db:up
 sleep 2
-yarn process
+npm run process

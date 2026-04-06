@@ -3,8 +3,8 @@
 ## Install
 
 ```bash
-yarn
-yarn build
+npm install
+npm run build
 ```
 
 ## Local Network
@@ -55,9 +55,9 @@ INDEXER_ENDPOINT_URL=http://localhost:8888/graphql
 Start the local PostgreSQL container and run the processor:
 
 ```bash
-yarn build
-yarn db:up
-yarn process
+npm run build
+npm run db:up
+npm run process
 ```
 
 You should see TFChain blocks being processed by the processor:
@@ -79,7 +79,7 @@ At this step, running `docker ps` should show the indexer containers running:
 Start the query node:
 
 ```bash
-yarn api
+npm run api
 ```
 
 Now you can use the GraphQL playground at http://localhost:4000/graphql
@@ -93,7 +93,7 @@ When TFChain has a new spec version with type changes, see [typeChanges.md](./ty
 make typegen-add
 
 # Check what changed in src/types/, add handler branches if needed
-yarn build
+npm run build
 ```
 
 ## Modifying the GraphQL Schema
@@ -103,17 +103,17 @@ If you need to add new entities or fields to the GraphQL API:
 1. Edit `schema.graphql`
 2. Regenerate models and create a migration:
    ```bash
-   yarn codegen
-   yarn build
-   yarn db:create-migration
+   npm run codegen
+   npm run build
+   npm run db:create-migration
    ```
 3. Add or update event handlers in `src/mappings/`
 4. Register new events in `src/processor.ts` if needed
 5. Test locally:
    ```bash
-   yarn db:up
-   yarn db:migrate
-   yarn process
+   npm run db:up
+   npm run db:migrate
+   npm run process
    ```
 
 ## Resetting the Processor Database
@@ -137,7 +137,7 @@ docker compose up -d
 
 ```bash
 ./scripts/reset-db.sh
-yarn process
+npm run process
 ```
 
 ## Debugging

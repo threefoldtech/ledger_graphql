@@ -4,7 +4,7 @@
 
 | Script | Description |
 |--------|-------------|
-| `init-countries.js` | Initialize countries/cities collection from open APIs. Runs automatically on every processor start (via `yarn process`). |
+| `init-countries.js` | Initialize countries/cities collection from open APIs. Runs automatically on every processor start (via `npm run process`). |
 | `reset-db.sh` | Drop and recreate the processor database. Use this to reindex from scratch after mapping changes. |
 | `restart.sh` | Restart the processor. |
 | `init-db.sh` | Initialize database setup. |
