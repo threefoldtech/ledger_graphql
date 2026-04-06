@@ -8,6 +8,13 @@ import { validateString } from "./nodes"
 
 import * as ipaddr from 'ipaddr.js';
 
+export function parseFarmCertification(kind: string): FarmCertification {
+    switch (kind) {
+        case 'Gold': return FarmCertification.Gold
+        default: return FarmCertification.NotCertified
+    }
+}
+
 export class FarmWithIPs {
     constructor(farmID: number, ips: PublicIp[]) {
         this.farmID = farmID
@@ -57,8 +64,6 @@ export async function farmStored(
         ? (farmStoredEventParsed as any).dedicatedFarm
         : false
     newFarm.certification = FarmCertification.NotCertified
-
-    newFarm.publicIPs = []
 
     await ctx.store.save<Farm>(newFarm)
 
@@ -146,11 +151,7 @@ export async function farmUpdated(
         const rawArgs = item.event.args as any
         rawArgs.dedicatedFarm = rawArgs['dedicatedFarm:'] ?? rawArgs.dedicatedFarm ?? false
         farmUpdatedEventParsed = farmUpdatedEvent.asV63
-        switch (farmUpdatedEvent.asV63.certification.__kind) {
-            case "Gold": {
-                certification = FarmCertification.Gold
-            }
-        }
+        certification = parseFarmCertification(farmUpdatedEvent.asV63.certification.__kind)
     }
 
     if (!farmUpdatedEventParsed) {
@@ -196,10 +197,6 @@ export async function farmUpdated(
             newIP.contractId = ip.contractId
             newIP.farm = savedFarm
             await ctx.store.save<PublicIp>(newIP)
-            if (!savedFarm.publicIPs) {
-                savedFarm.publicIPs = []
-            }
-            savedFarm.publicIPs.push(newIP)
             ctx.log.debug({ eventName: item.name, ip: ip.ip.toString() }, `PublicIP: ${ip.ip.toString()} added with farm id: ${savedFarm.farmID}`);
         }
     }
@@ -267,16 +264,6 @@ export async function farmCertificationSet(
         return
     }
 
-    let certType = FarmCertification.NotCertified
-    switch (certification.__kind.toString()) {
-        case 'NotCertified':
-            certType = FarmCertification.NotCertified
-            break
-        case 'Gold':
-            certType = FarmCertification.Gold
-            break
-    }
-
-    savedFarm.certification = certType
+    savedFarm.certification = parseFarmCertification(certification.__kind.toString())
     await ctx.store.save<Farm>(savedFarm)
 }
