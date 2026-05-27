@@ -1,6 +1,6 @@
-# Tfchain graphql
+# TFChain GraphQL
 
-[Subsquid](https://docs.subsquid.io) is used to index and provide a graphql interface on top of tfchain.
+TFChain GraphQL provides a GraphQL indexing and query interface for TFChain, the ThreeFold blockchain. It uses [Subsquid](https://docs.subsquid.io) to index on-chain events and expose them through a GraphQL API.
 
 ## Concept
 
@@ -35,3 +35,8 @@ see [docs](./docs/readme.md)
     - `typegen.json` - Typegen config
     - `typesBundle.json` - Typegen bundle config
 - `schema.graphql` - The graphql schema file, changes to this file will results in changes to the models (`src/models`)
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+Copyright (c) TFTech NV.
