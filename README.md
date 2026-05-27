@@ -1,10 +1,10 @@
-# TFChain GraphQL
+# Ledger GraphQL
 
-A high-performance indexing layer with a queryable GraphQL API over TFChain on-chain data. It enables efficient data access for dashboards, applications, and analytics tools without directly querying the blockchain.
+A high-performance indexing layer with a queryable GraphQL API over Ledger Chain on-chain data. It enables efficient data access for dashboards, applications, and analytics tools without directly querying the blockchain.
 
 ## What this is
 
-This project provides a Subsquid-based indexer that consumes raw blockchain events from TFChain, transforms them into a structured schema, and exposes them through a GraphQL endpoint. It replaces direct chain queries with a fast, developer-friendly API suitable for front-end applications and data analytics.
+This project provides a Subsquid-based indexer that consumes raw blockchain events from Ledger Chain, transforms them into a structured schema, and exposes them through a GraphQL endpoint. It replaces direct chain queries with a fast, developer-friendly API suitable for front-end applications and data analytics.
 
 ## What this repository contains
 
@@ -23,7 +23,7 @@ The indexer sits between the blockchain and consumer applications. It decouples 
 The data pipeline is:
 
 ```
-TFChain => Squid Indexer => Indexer GraphQL gateway => Squid Processor => Database => Query Node GraphQL endpoint
+Ledger Chain => Squid Indexer => Indexer GraphQL gateway => Squid Processor => Database => Query Node GraphQL endpoint
 ```
 
 ## Relation to ThreeFold
@@ -55,7 +55,7 @@ See [docs](./docs/readme.md) for detailed running instructions.
   - `types` — Type files that require manual edits when the schema or chain types change
   - `processor.ts` — Processor entrypoint
 - `typegen` — Declaration file generation (used for development)
-  - `tfchainVersions.jsonl` — Generated TFChain runtime versions and their data
+  - `tfchainVersions.jsonl` — Generated Ledger Chain runtime versions and their data
   - `typegen.json` — Typegen config
   - `typesBundle.json` — Typegen bundle config
 - `schema.graphql` — The GraphQL schema file; changes to this file result in changes to the models in `src/models`
