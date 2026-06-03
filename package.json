@@ -16,6 +16,8 @@
     "api": "squid-graphql-server",
     "codegen": "npx squid-typeorm-codegen",
     "typegen": "squid-substrate-typegen typegen/typegen.json",
+    "typegen:seed": "./scripts/seed-versions.sh",
+    "typegen:merge": "node scripts/merge-versions.js",
     "lint": "npm run lint:prod -- --fix",
     "lint:prod": "eslint . --ext .ts --ignore-path .gitignore --max-warnings 0"
   },

@@ -1,5 +1,5 @@
 {
-  "outDir": "../src/typesDevelopment",
+  "outDir": "../src/types",
   "specVersions": "./tfchainVersions.jsonl",
   "typesBundle": "./typesBundle.json",
   "events": [
@@ -25,6 +25,9 @@
     "TfgridModule.NodePublicConfigStored",
     "TfgridModule.PowerTargetChanged",
     "TfgridModule.PowerStateChanged",
+    "TfgridModule.FarmCertificationSet",
+    "TfgridModule.NodeCertificationSet",
+    "TfgridModule.FarmingPolicyUpdated",
     "SmartContractModule.NruConsumptionReportReceived",
     "SmartContractModule.ContractCreated",
     "SmartContractModule.ContractUpdated",

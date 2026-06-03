@@ -9,6 +9,20 @@ export interface Contract {
     solutionProviderId: (bigint | undefined)
 }
 
+export type Cause = Cause_CanceledByCollective | Cause_CanceledByUser | Cause_OutOfFunds
+
+export interface Cause_CanceledByCollective {
+    __kind: 'CanceledByCollective'
+}
+
+export interface Cause_CanceledByUser {
+    __kind: 'CanceledByUser'
+}
+
+export interface Cause_OutOfFunds {
+    __kind: 'OutOfFunds'
+}
+
 export type ContractState = ContractState_Created | ContractState_Deleted | ContractState_GracePeriod
 
 export interface ContractState_Created {
@@ -40,20 +54,6 @@ export interface ContractData_NameContract {
 export interface ContractData_RentContract {
     __kind: 'RentContract'
     value: RentContract
-}
-
-export type Cause = Cause_CanceledByCollective | Cause_CanceledByUser | Cause_OutOfFunds
-
-export interface Cause_CanceledByCollective {
-    __kind: 'CanceledByCollective'
-}
-
-export interface Cause_CanceledByUser {
-    __kind: 'CanceledByUser'
-}
-
-export interface Cause_OutOfFunds {
-    __kind: 'OutOfFunds'
 }
 
 export interface NodeContract {

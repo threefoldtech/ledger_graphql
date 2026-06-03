@@ -9,7 +9,7 @@ export async function serviceContractCreated(
     ctx: Ctx,
     item: EventItem<'SmartContractModule.ServiceContractCreated', { event: { args: true } }>,
 ) {
-    let serviceContractCreatedEvent = new SmartContractModuleServiceContractCreatedEvent(ctx, item.event).asV122
+    let serviceContractCreatedEvent = new SmartContractModuleServiceContractCreatedEvent(ctx, item.event).asV123
 
     let serviceContract = new ServiceContract()
 
@@ -31,7 +31,7 @@ export async function serviceContractMetadataSet(
     ctx: Ctx,
     item: EventItem<'SmartContractModule.ServiceContractMetadataSet', { event: { args: true } }>,
 ) {
-    let serviceContractMetadataSetEvent = new SmartContractModuleServiceContractMetadataSetEvent(ctx, item.event).asV122
+    let serviceContractMetadataSetEvent = new SmartContractModuleServiceContractMetadataSetEvent(ctx, item.event).asV123
 
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractMetadataSetEvent.serviceContractId } })
     if (savedServiceContract) {
@@ -55,7 +55,7 @@ export async function serviceContractFeesSet(
     ctx: Ctx,
     item: EventItem<'SmartContractModule.ServiceContractFeesSet', { event: { args: true } }>,
 ) {
-    let serviceContractFeesSetEvent = new SmartContractModuleServiceContractFeesSetEvent(ctx, item.event).asV122
+    let serviceContractFeesSetEvent = new SmartContractModuleServiceContractFeesSetEvent(ctx, item.event).asV123
 
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractFeesSetEvent.serviceContractId } })
     if (savedServiceContract) {
@@ -80,7 +80,7 @@ export async function serviceContractApproved(
     ctx: Ctx,
     item: EventItem<'SmartContractModule.ServiceContractApproved', { event: { args: true } }>,
 ) {
-    let serviceContractApprovedEvent = new SmartContractModuleServiceContractApprovedEvent(ctx, item.event).asV122
+    let serviceContractApprovedEvent = new SmartContractModuleServiceContractApprovedEvent(ctx, item.event).asV123
 
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractApprovedEvent.serviceContractId } })
     if (savedServiceContract) {
@@ -108,8 +108,8 @@ export async function serviceContractCanceled(
 ) {
     const SmartContractModuleServiceContractCanceled = new SmartContractModuleServiceContractCanceledEvent(ctx, item.event)
     let serviceContractCanceledEvent
-    if (SmartContractModuleServiceContractCanceled.isV122) {
-        serviceContractCanceledEvent = SmartContractModuleServiceContractCanceled.asV122
+    if (SmartContractModuleServiceContractCanceled.isV123) {
+        serviceContractCanceledEvent = SmartContractModuleServiceContractCanceled.asV123
     } else if (SmartContractModuleServiceContractCanceled.isV147) {
         serviceContractCanceledEvent = SmartContractModuleServiceContractCanceled.asV147
     } else if (SmartContractModuleServiceContractCanceled.isV148) {
@@ -130,7 +130,7 @@ export async function serviceContractBilled(
     ctx: Ctx,
     item: EventItem<'SmartContractModule.ServiceContractBilled', { event: { args: true } }>,
 ) {
-    const serviceContractBilledEvent = new SmartContractModuleServiceContractBilledEvent(ctx, item.event).asV122
+    const serviceContractBilledEvent = new SmartContractModuleServiceContractBilledEvent(ctx, item.event).asV123
 
     const serviceContractBill = new ServiceContractBill()
 

@@ -1,3 +1,5 @@
+import type {Result, Option} from './support'
+
 export interface Node {
     version: number
     id: number

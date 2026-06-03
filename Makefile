@@ -1,4 +1,4 @@
-.PHONY: version-bump
+.PHONY: version-bump typegen typegen-seed typegen-add
 
 # usage: > type=patch make version-bump
 # usage: > type=minor make version-bump
@@ -20,3 +20,21 @@ version-bump:
 	else \
 		echo "Invalid version type. Please use patch, minor, or major."; \
 	fi
+
+# Regenerate src/types/ from accumulated specVersions in tfchainVersions.jsonl
+typegen:
+	npx squid-substrate-typegen typegen/typegen.json
+
+# Discover all specVersions from all TFChain networks (mainnet, testnet, qanet, devnet)
+typegen-seed:
+	./scripts/seed-versions.sh
+
+# Add new specVersion from a chain endpoint and regenerate types
+# Usage: make typegen-add
+# Usage: WS_URL=wss://tfchain.test.grid.tf make typegen-add
+typegen-add:
+	npx squid-substrate-metadata-explorer \
+		--chain $${WS_URL:-ws://localhost:9944} \
+		--out /tmp/new_versions.jsonl
+	node scripts/merge-versions.js typegen/tfchainVersions.jsonl /tmp/new_versions.jsonl
+	npx squid-substrate-typegen typegen/typegen.json

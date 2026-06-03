@@ -31,8 +31,6 @@ export async function nodeStored(
         nodeEvent = node.asV43
     } else if (node.isV63) {
         nodeEvent = node.asV63
-    } else if (node.isV101) {
-        nodeEvent = node.asV101
     } else if (node.isV105) {
         nodeEvent = node.asV105
     } else if (node.isV118) {
@@ -98,11 +96,9 @@ export async function nodeStored(
         newNode.serialNumber = validateString(ctx, nodeAsV43.serialNumber.toString())
     }
 
-    if (node.isV105 || node.isV101 || node.isV63) {
+    if (node.isV63 || node.isV105) {
         let nodeEvent
-        if (node.isV101) {
-            nodeEvent = node.asV101
-        } else if (node.isV63) {
+        if (node.isV63) {
             nodeEvent = node.asV63
         } else if (node.isV105) {
             nodeEvent = node.asV105
@@ -169,8 +165,6 @@ export async function nodeUpdated(
         nodeEvent = node.asV43
     } else if (node.isV63) {
         nodeEvent = node.asV63
-    } else if (node.isV101) {
-        nodeEvent = node.asV101
     } else if (node.isV105) {
         nodeEvent = node.asV105
     } else if (node.isV118) {
@@ -270,11 +264,9 @@ export async function nodeUpdated(
         }
     }
 
-    if (node.isV105 || node.isV101 || node.isV63) {
+    if (node.isV63 || node.isV105) {
         let nodeEvent
-        if (node.isV101) {
-            nodeEvent = node.asV101
-        } else if (node.isV63) {
+        if (node.isV63) {
             nodeEvent = node.asV63
         } else if (node.isV105) {
             nodeEvent = node.asV105
@@ -352,7 +344,7 @@ export async function nodeDeleted(
     ctx: Ctx,
     item: EventItem<'TfgridModule.NodeDeleted', { event: { args: true } }>,
 ) {
-    const nodeID = new TfgridModuleNodeDeletedEvent(ctx, item.event).asV49
+    const nodeID = new TfgridModuleNodeDeletedEvent(ctx, item.event).asV9
 
     const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true, interfaces: true } })
 
@@ -407,7 +399,7 @@ function collectUptimeEvents(ctx: Ctx): { block: SubstrateBlock, event: UptimeEv
     for (let block of ctx.blocks) {
         for (let item of block.items) {
             if (item.name === "TfgridModule.NodeUptimeReported") {
-                const [nodeID, now, uptime] = new TfgridModuleNodeUptimeReportedEvent(ctx, item.event).asV49
+                const [nodeID, now, uptime] = new TfgridModuleNodeUptimeReportedEvent(ctx, item.event).asV9
                 const event = new UptimeEvent()
                 event.id = item.event.id
                 event.nodeID = nodeID
@@ -432,8 +424,8 @@ export async function nodePublicConfigStored(
     let nodeID, config
     let ipv4, ipv6, gw4, gw6, domain
 
-    if (storedEvent.isV49) {
-        [nodeID, config] = storedEvent.asV49
+    if (storedEvent.isV12) {
+        [nodeID, config] = storedEvent.asV12
         ipv4 = validateString(ctx, config.ipv4.toString())
         ipv6 = validateString(ctx, config.ipv6.toString())
         gw4 = validateString(ctx, config.gw4.toString())
@@ -600,7 +592,7 @@ export async function nodeExtraFeeSet(
     ctx: Ctx,
     item: EventItem<'SmartContractModule.NodeExtraFeeSet', { event: { args: true } }>
 ) {
-    const { nodeId, extraFee } = new SmartContractModuleNodeExtraFeeSetEvent(ctx, item.event).asV134
+    const { nodeId, extraFee } = new SmartContractModuleNodeExtraFeeSetEvent(ctx, item.event).asV140
 
     const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId }, relations: { location: true, interfaces: true } })
     if (!savedNode) return
@@ -657,17 +649,6 @@ function getNodePublicConfig(ctx: Ctx, node: TfgridModuleNodeStoredEvent): NodeP
         }
     } else if (node.isV63) {
         nodeEvent = node.asV63
-        if (nodeEvent.publicConfig) {
-            return {
-                ip4: validateString(ctx, nodeEvent.publicConfig?.ipv4.toString()),
-                gw4: validateString(ctx, nodeEvent.publicConfig?.gw4.toString()),
-                ip6: validateString(ctx, nodeEvent.publicConfig?.ipv6.toString()),
-                gw6: validateString(ctx, nodeEvent.publicConfig?.gw6.toString()),
-                domain: validateString(ctx, nodeEvent.publicConfig?.domain.toString())
-            }
-        }
-    } else if (node.isV101) {
-        nodeEvent = node.asV101
         if (nodeEvent.publicConfig) {
             return {
                 ip4: validateString(ctx, nodeEvent.publicConfig?.ipv4.toString()),

@@ -1,9 +1,11 @@
+import type {Result, Option} from './support'
+
 export interface Twin {
+    version: number
     id: number
     accountId: Uint8Array
-    relay: (Uint8Array | undefined)
+    ip: Uint8Array
     entities: EntityProof[]
-    pk: (Uint8Array | undefined)
 }
 
 export interface EntityProof {

@@ -22,9 +22,9 @@ export async function priceStored(
         priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV9[0], 'le'))) // [Uint8Array, Uint8Array] <- U16F16, AccountId
         ctx.log.trace(`V9: block number: ${block.height}, timestamp: ${timestamp}, Price: ${priceEvent}, Raw: ${priceStoredEvent.asV9[0]}`)
 
-    } else if (priceStoredEvent.isV49) {
-        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV49, 'le'))) // Uint8Array <-U16F16
-        ctx.log.trace(`V49: block number: ${block.height}, timestamp: ${timestamp}, Price: ${priceEvent}, Raw: ${priceStoredEvent.asV49}`)
+    } else if (priceStoredEvent.isV19) {
+        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV19, 'le'))) // Uint8Array <-U16F16
+        ctx.log.trace(`V19: block number: ${block.height}, timestamp: ${timestamp}, Price: ${priceEvent}, Raw: ${priceStoredEvent.asV19}`)
 
     } else if (priceStoredEvent.isV101) {
         priceEvent = BigDecimal(priceStoredEvent.asV101 / 1000) // number <- u32 (milli USD)

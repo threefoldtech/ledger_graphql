@@ -1,29 +1,11 @@
+import type {Result, Option} from './support'
+
 export interface Contract {
     version: number
     state: ContractState
     contractId: bigint
     twinId: number
     contractType: ContractData
-}
-
-export interface Node {
-    version: number
-    id: number
-    farmId: number
-    twinId: number
-    resources: Resources
-    location: Location
-    country: Uint8Array
-    city: Uint8Array
-    publicConfig: (PublicConfig | undefined)
-    created: bigint
-    farmingPolicyId: number
-    interfaces: Interface[]
-    certification: NodeCertification
-    secureBoot: boolean
-    virtualized: boolean
-    serialNumber: Uint8Array
-    connectionPrice: number
 }
 
 export interface PricingPolicy {
@@ -39,14 +21,6 @@ export interface PricingPolicy {
     foundationAccount: Uint8Array
     certifiedSalesAccount: Uint8Array
     discountForDedicationNodes: number
-}
-
-export interface Twin {
-    version: number
-    id: number
-    accountId: Uint8Array
-    ip: Uint8Array
-    entities: EntityProof[]
 }
 
 export type ContractState = ContractState_Created | ContractState_Deleted | ContractState_GracePeriod
@@ -82,50 +56,9 @@ export interface ContractData_RentContract {
     value: RentContract
 }
 
-export interface Resources {
-    hru: bigint
-    sru: bigint
-    cru: bigint
-    mru: bigint
-}
-
-export interface Location {
-    longitude: Uint8Array
-    latitude: Uint8Array
-}
-
-export interface PublicConfig {
-    ipv4: Uint8Array
-    ipv6: Uint8Array
-    gw4: Uint8Array
-    gw6: Uint8Array
-    domain: Uint8Array
-}
-
-export interface Interface {
-    name: Uint8Array
-    mac: Uint8Array
-    ips: Uint8Array[]
-}
-
-export type NodeCertification = NodeCertification_Diy | NodeCertification_Certified
-
-export interface NodeCertification_Diy {
-    __kind: 'Diy'
-}
-
-export interface NodeCertification_Certified {
-    __kind: 'Certified'
-}
-
 export interface Policy {
     value: number
     unit: Unit
-}
-
-export interface EntityProof {
-    entityId: number
-    signature: Uint8Array
 }
 
 export type Cause = Cause_CanceledByUser | Cause_OutOfFunds

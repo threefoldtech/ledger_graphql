@@ -1,3 +1,5 @@
+import type {Result, Option} from './support'
+
 export interface ServiceContract {
     serviceContractId: bigint
     serviceTwinId: number
@@ -17,6 +19,16 @@ export interface ServiceContractBill {
     metadata: Uint8Array
 }
 
+export type Cause = Cause_CanceledByUser | Cause_OutOfFunds
+
+export interface Cause_CanceledByUser {
+    __kind: 'CanceledByUser'
+}
+
+export interface Cause_OutOfFunds {
+    __kind: 'OutOfFunds'
+}
+
 export type ServiceContractState = ServiceContractState_Created | ServiceContractState_AgreementReady | ServiceContractState_ApprovedByBoth
 
 export interface ServiceContractState_Created {
@@ -29,14 +41,4 @@ export interface ServiceContractState_AgreementReady {
 
 export interface ServiceContractState_ApprovedByBoth {
     __kind: 'ApprovedByBoth'
-}
-
-export type Cause = Cause_CanceledByUser | Cause_OutOfFunds
-
-export interface Cause_CanceledByUser {
-    __kind: 'CanceledByUser'
-}
-
-export interface Cause_OutOfFunds {
-    __kind: 'OutOfFunds'
 }

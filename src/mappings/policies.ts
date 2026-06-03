@@ -21,8 +21,8 @@ export async function pricingPolicyStored(
 
     let pricingPolicyEventParsed
 
-    if (pricingPolicyEvent.isV49) {
-        pricingPolicyEventParsed = pricingPolicyEvent.asV49
+    if (pricingPolicyEvent.isV9) {
+        pricingPolicyEventParsed = pricingPolicyEvent.asV9
     } else if (pricingPolicyEvent.isV51) {
         pricingPolicyEventParsed = pricingPolicyEvent.asV51
     } else if (pricingPolicyEvent.isV101) {
