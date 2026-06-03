@@ -1,9 +1,21 @@
-# TFchain Graphql Documentation
+# TFChain GraphQL Documentation
 
 ## Development
 
-see [development](./development.md)
+See [development](./development.md)
 
-## Running in Production mode
+## Running in Production
 
-see [production](./production.md)
+See [production](./production.md)
+
+## Handling Type Changes
+
+See [typeChanges](./typeChanges.md) — how to add new runtime versions, resync the processor, and how version detection works.
+
+## Advanced Topics
+
+See [advanced-development](./advanced-development.md) — pre-V14 metadata internals, indexer-processor contract, cross-network metadata, debugging decode failures.
+
+## Releasing
+
+See [release_process](./release_process.md)

@@ -4,7 +4,7 @@ A high-performance indexing layer with a queryable GraphQL API over Ledger Chain
 
 ## What this is
 
-This project provides a Subsquid-based indexer that consumes raw blockchain events from Ledger Chain, transforms them into a structured schema, and exposes them through a GraphQL endpoint. It replaces direct chain queries with a fast, developer-friendly API suitable for front-end applications and data analytics.
+This project provides a [Subsquid](https://docs.subsquid.io)-based indexer that consumes raw blockchain events from Ledger Chain, transforms them into a structured schema, and exposes them through a GraphQL endpoint. It replaces direct chain queries with a fast, developer-friendly API suitable for front-end applications and data analytics.
 
 ## What this repository contains
 
@@ -36,7 +36,7 @@ This repository is owned and maintained by TF-Tech NV, a Belgian company respons
 
 ## Prerequisites
 
-- Node v16.x
+- Node v20+
 - Docker
 - Docker Compose
 
@@ -46,19 +46,27 @@ See [docs](./docs/readme.md) for detailed running instructions.
 
 ## Project layout
 
-- `indexer` — Docker Compose setup for the indexer
-- `db` — Processor database migration files
-- `scripts` — Scripts for generating initial state and development scripts
-- `src` — Source code
-  - `mappings` — Mapper functions for indexer data
-  - `model` — Generated models from the `schema.graphql` file
-  - `types` — Type files that require manual edits when the schema or chain types change
-  - `processor.ts` — Processor entrypoint
-- `typegen` — Declaration file generation (used for development)
-  - `tfchainVersions.jsonl` — Generated Ledger Chain runtime versions and their data
-  - `typegen.json` — Typegen config
-  - `typesBundle.json` — Typegen bundle config
-- `schema.graphql` — The GraphQL schema file; changes to this file result in changes to the models in `src/models`
+- `indexer/` — Docker Compose setup for the indexer (archive)
+- `db/` — Processor database migration files
+- `scripts/` — Utility scripts (see [scripts/readme.md](./scripts/readme.md))
+- `src/` — Processor source code
+    - `mappings/` — Event handler functions that map chain events to database entities
+    - `model/` — Generated TypeORM models from `schema.graphql`
+    - `types/` — Auto-generated type definitions (do not edit manually — run `make typegen`)
+    - `processor.ts` — Processor entrypoint: event subscription and dispatch
+- `typegen/` — Type generation infrastructure
+    - `tfchainVersions.jsonl` — Append-only log of runtime metadata from all Ledger Chain networks
+    - `typegen.json` — Typegen config: which events to generate types for
+    - `typesBundle.json` — Frozen pre-V14 type mappings (do not edit for new runtime versions)
+- `docs/` — Documentation
+    - [typeChanges.md](./docs/typeChanges.md) — How to handle type changes on chain (adding new runtime versions, resync guidance)
+    - [development.md](./docs/development.md) — Local development setup
+    - [production.md](./docs/production.md) — Production deployment
+    - [release_process.md](./docs/release_process.md) — Release workflow
+- `schema.graphql` — GraphQL schema — changes here regenerate `src/model/` via `npm run codegen`
+- `Makefile` — Common tasks: `typegen`, `typegen-add`, `typegen-seed`, `version-bump`
+- `processor-chart/` — Helm chart for processor + query node deployment
+- `indexer/chart/` — Helm chart for indexer stack deployment
 
 ## License
 

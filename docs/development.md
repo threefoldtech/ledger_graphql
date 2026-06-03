@@ -1,74 +1,152 @@
-# Developing on tfchain graphql
+# Developing on TFChain GraphQL
 
-Install: 
+## Install
 
-```
+```bash
 yarn
 yarn build
 ```
 
 ## Local Network
 
-### Run tfchain 
+### Run TFChain
 
-see https://github.com/threefoldtech/tfchain
+See https://github.com/threefoldtech/tfchain
 
 ### Run Indexer
 
-Check `indexer/.env` and adjust the websocket endpoint to your local tfchain address.
+Check `indexer/.env` and adjust the websocket endpoint to your local TFChain address.
 
-```
+```bash
 cd indexer
-docker-compose up -d
+docker compose up -d
 ```
 
-Indexer services should now be started, you can check if it's syncing properly by streaming the logs for the indexer:
+Indexer services should now be started. Check if it's syncing properly by streaming the ingest logs:
 
-```
+```bash
 docker logs indexer-ingest-1 -f
 ```
 
-You should be able to follow tfchain blocks processing:
+You should see TFChain blocks being processed:
 
-![image](https://user-images.githubusercontent.com/73958772/209998096-3d5381d9-97ee-438d-824d-d92d997b42aa.png)
+![Indexer logs](https://user-images.githubusercontent.com/73958772/209998096-3d5381d9-97ee-438d-824d-d92d997b42aa.png)
 
-### Run processor
+### Run Processor (local, outside Docker)
 
-Check `.env` and adjust the websocket endpoint to your local tfchain address.
+Check `.env` and adjust the websocket endpoint and indexer URL to your local setup.
 
-```
+Start the local PostgreSQL container and run the processor:
+
+```bash
 yarn build
 yarn db:up
 yarn process
 ```
 
-You should be able to follow tfchain blocks processing:
+You should see TFChain blocks being processed by the processor:
 
-![image](https://user-images.githubusercontent.com/73958772/210000023-c575d91a-382e-4fdc-85b3-199a135b493f.png)
+![Processor logs](https://user-images.githubusercontent.com/73958772/210000023-c575d91a-382e-4fdc-85b3-199a135b493f.png)
 
+If you make changes, stop the containers before restarting:
 
-If you make some changes, don't forget to turn down container before tuning it on again.
-
-```
-docker-compose down
-```
-
-### Run graphql UI
-
-At this step, by running 
-
-```
-docker ps
+```bash
+docker compose down
 ```
 
-it should display such list of running containers:
+### Run GraphQL UI
 
-![image](https://user-images.githubusercontent.com/42457449/258668686-cd331bd6-ed80-47ea-87a5-16f88d969025.png)
+At this step, running `docker ps` should show the indexer containers running:
 
-Make sure indexer and processor are both listening to tfchain to be able to browse.
+![Docker containers](https://user-images.githubusercontent.com/42457449/258668686-cd331bd6-ed80-47ea-87a5-16f88d969025.png)
 
-```
+Start the query node:
+
+```bash
 yarn api
 ```
 
-Now you can use the UI (http://localhost:4000/graphql) and run some tests.
+Now you can use the GraphQL playground at http://localhost:4000/graphql
+
+## Adding New Runtime Versions
+
+When TFChain has a new spec version with type changes, see [typeChanges.md](./typeChanges.md) for the full workflow. The short version:
+
+```bash
+# Point at your local chain (or a remote network via WS_URL=wss://...)
+make typegen-add
+
+# Check what changed in src/types/, add handler branches if needed
+yarn build
+```
+
+## Modifying the GraphQL Schema
+
+If you need to add new entities or fields to the GraphQL API:
+
+1. Edit `schema.graphql`
+2. Regenerate models and create a migration:
+   ```bash
+   yarn codegen
+   yarn build
+   yarn db:create-migration
+   ```
+3. Add or update event handlers in `src/mappings/`
+4. Register new events in `src/processor.ts` if needed
+5. Test locally:
+   ```bash
+   yarn db:up
+   yarn db:migrate
+   yarn process
+   ```
+
+## Resetting the Processor Database
+
+### Option A: Volume wipe (recommended)
+
+The simplest and safest approach. Wipes the entire PostgreSQL data directory:
+
+```bash
+# Stop processor and DB
+docker compose down processor db
+
+# Wipe postgres data
+rm -rf /path/to/postgres-data/*
+
+# Restart - processor will run migrations and start from block 0
+docker compose up -d
+```
+
+### Option B: Script (local dev)
+
+```bash
+./scripts/reset-db.sh
+yarn process
+```
+
+## Debugging
+
+### Debug logging
+
+Use `SQD_DEBUG=sqd:processor:mapping` for event processing visibility. Avoid `sqd:processor:*` which floods logs with serialization errors from a known node-fetch bug.
+
+```bash
+# In .env or docker-compose.yml environment:
+SQD_DEBUG=sqd:processor:mapping
+```
+
+### Check processor progress
+
+```bash
+# Current height
+docker exec db-container psql -U postgres -d tfgrid-graphql \
+  -c 'SELECT height FROM squid_processor.status;'
+
+# Entity counts
+docker exec db-container psql -U postgres -d tfgrid-graphql -c "
+  SELECT 'farms' AS entity, count(*) FROM farm
+  UNION ALL SELECT 'nodes', count(*) FROM node
+  UNION ALL SELECT 'twins', count(*) FROM twin
+  UNION ALL SELECT 'contracts', count(*) FROM node_contract;
+"
+```
