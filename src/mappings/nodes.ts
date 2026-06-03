@@ -13,7 +13,13 @@ import { PublicConfig as V105PublicConfig } from '../types/v105'
 
 import { Ctx } from '../processor'
 import assert from "assert";
-import { allowedNodeEnvironmentFlags } from "process";
+
+export function parseNodeCertification(kind: string): NodeCertification {
+    switch (kind) {
+        case 'Certified': return NodeCertification.Certified
+        default: return NodeCertification.Diy
+    }
+}
 
 export async function nodeStored(
     ctx: Ctx,
@@ -137,8 +143,6 @@ export async function nodeStored(
     resourcesTotal.cru = nodeEvent.resources.cru
     await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
 
-    newNode.interfaces = []
-
     const interfacesPromisses = nodeEvent.interfaces.map(async (intf, index) => {
         const newInterface = new Interfaces()
         newInterface.id = item.event.id + '-' + index
@@ -226,21 +230,9 @@ export async function nodeUpdated(
         savedNode.country = validateString(ctx, nodeAsV28.country.toString())
         savedNode.city = validateString(ctx, nodeAsV28.city.toString())
 
-        if (nodeAsV28.certificationType) {
-            const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
-            let certType = NodeCertification.Diy
-            switch (certificationTypeAsString) {
-                case 'Diy':
-                    certType = NodeCertification.Diy
-                    break
-                case 'Certified':
-                    certType = NodeCertification.Certified
-                    break
-            }
-            savedNode.certification = certType
-        } else {
-            savedNode.certification = NodeCertification.Diy
-        }
+        savedNode.certification = nodeAsV28.certificationType
+            ? parseNodeCertification(nodeAsV28.certificationType.__kind.toString())
+            : NodeCertification.Diy
     }
 
     if (node.isV43) {
@@ -250,21 +242,9 @@ export async function nodeUpdated(
         savedNode.secure = nodeAsV43.secureBoot ? true : false
         savedNode.virtualized = nodeAsV43.virtualized ? true : false
         savedNode.serialNumber = validateString(ctx, nodeAsV43.serialNumber.toString())
-        if (nodeAsV43.certificationType) {
-            const certificationTypeAsString = nodeAsV43.certificationType.__kind.toString()
-            let certType = NodeCertification.Diy
-            switch (certificationTypeAsString) {
-                case 'Diy':
-                    certType = NodeCertification.Diy
-                    break
-                case 'Certified':
-                    certType = NodeCertification.Certified
-                    break
-            }
-            savedNode.certification = certType
-        } else {
-            savedNode.certification = NodeCertification.Diy
-        }
+        savedNode.certification = nodeAsV43.certificationType
+            ? parseNodeCertification(nodeAsV43.certificationType.__kind.toString())
+            : NodeCertification.Diy
     }
 
     if (node.isV63 || node.isV105) {
@@ -281,21 +261,9 @@ export async function nodeUpdated(
         savedNode.secure = nodeEvent.secureBoot ? true : false
         savedNode.virtualized = nodeEvent.virtualized ? true : false
         savedNode.serialNumber = validateString(ctx, nodeEvent.serialNumber.toString())
-        if (nodeEvent.certification) {
-            const certificationTypeAsString = nodeEvent.certification.__kind.toString()
-            let certType = NodeCertification.Diy
-            switch (certificationTypeAsString) {
-                case 'Diy':
-                    certType = NodeCertification.Diy
-                    break
-                case 'Certified':
-                    certType = NodeCertification.Certified
-                    break
-            }
-            savedNode.certification = certType
-        } else {
-            savedNode.certification = NodeCertification.Diy
-        }
+        savedNode.certification = nodeEvent.certification
+            ? parseNodeCertification(nodeEvent.certification.__kind.toString())
+            : NodeCertification.Diy
     }
 
     if (node.isV118) {
@@ -306,21 +274,9 @@ export async function nodeUpdated(
         savedNode.secure = nodeEvent.secureBoot ? true : false
         savedNode.virtualized = nodeEvent.virtualized ? true : false
         savedNode.serialNumber = nodeEvent.serialNumber ? validateString(ctx, nodeEvent.serialNumber.toString()) : 'Unknown'
-        if (nodeEvent.certification) {
-            const certificationTypeAsString = nodeEvent.certification.__kind.toString()
-            let certType = NodeCertification.Diy
-            switch (certificationTypeAsString) {
-                case 'Diy':
-                    certType = NodeCertification.Diy
-                    break
-                case 'Certified':
-                    certType = NodeCertification.Certified
-                    break
-            }
-            savedNode.certification = certType
-        } else {
-            savedNode.certification = NodeCertification.Diy
-        }
+        savedNode.certification = nodeEvent.certification
+            ? parseNodeCertification(nodeEvent.certification.__kind.toString())
+            : NodeCertification.Diy
     }
 
     // First remove all ifs
@@ -337,7 +293,6 @@ export async function nodeUpdated(
         newInterface.node = savedNode
         await ctx.store.save<Interfaces>(newInterface)
 
-        savedNode.interfaces.push(newInterface)
     }))
 
     await ctx.store.save<Node>(savedNode)
@@ -499,17 +454,7 @@ export async function nodeCertificationSet(
     const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true, interfaces: true } })
     if (!savedNode) return
 
-    let certType = NodeCertification.Diy
-    switch (certification.__kind.toString()) {
-        case 'Diy':
-            certType = NodeCertification.Diy
-            break
-        case 'Certified':
-            certType = NodeCertification.Certified
-            break
-    }
-
-    savedNode.certification = certType
+    savedNode.certification = parseNodeCertification(certification.__kind.toString())
 
     await ctx.store.save<Node>(savedNode)
 }
@@ -669,8 +614,6 @@ function getNodePublicConfig(ctx: Ctx, node: TfgridModuleNodeStoredEvent): NodeP
             if (nodeEvent.publicConfig.domain) {
                 domain = nodeEvent.publicConfig.domain.toString()
             }
-            let h = nodeEvent.publicConfig?.ip6?.ip.toString();
-            let r = nodeEvent.publicConfig?.ip4.ip.toString();
             return {
                 ip4: validateString(ctx, nodeEvent.publicConfig?.ip4.ip.toString()),
                 gw4: validateString(ctx, nodeEvent.publicConfig?.ip4.gw.toString()),

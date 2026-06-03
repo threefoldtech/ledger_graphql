@@ -394,38 +394,6 @@ export function collectContractBillReports(ctx: Ctx): ContractBillReport[] {
     return list
 }
 
-export async function contractBilled(
-    ctx: Ctx,
-    item: EventItem<'SmartContractModule.ContractBilled', { event: { args: true } }>,
-) {
-    const contract_billed_event = new SmartContractModuleContractBilledEvent(ctx, item.event).asV9
-
-    const newContractBilledReport = new ContractBillReport()
-
-    newContractBilledReport.id = item.event.id
-    newContractBilledReport.contractID = contract_billed_event.contractId
-
-    let level = DiscountLevel.None
-    switch (contract_billed_event.discountLevel.__kind) {
-        case 'None': break
-        case 'Default':
-            level = DiscountLevel.Default
-            break
-        case 'Bronze':
-            level = DiscountLevel.Bronze
-            break
-        case 'Silver':
-            level = DiscountLevel.Silver
-            break
-        case 'Gold': level = DiscountLevel.Gold
-    }
-    newContractBilledReport.discountReceived = level
-    newContractBilledReport.amountBilled = contract_billed_event.amountBilled
-    newContractBilledReport.timestamp = contract_billed_event.timestamp
-
-    await ctx.store.save<ContractBillReport>(newContractBilledReport)
-}
-
 export async function contractUpdateUsedResources(
     ctx: Ctx,
     item: EventItem<'SmartContractModule.UpdatedUsedResources', { event: { args: true } }>,

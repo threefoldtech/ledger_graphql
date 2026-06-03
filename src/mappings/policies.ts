@@ -11,7 +11,8 @@ import {
     TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent,
     TfgridModuleFarmingPolicyUpdatedEvent
 } from "../types/events";
-import { validateString } from "./nodes"
+import { validateString, parseNodeCertification } from "./nodes"
+import { parseFarmCertification } from "./farms"
 
 export async function pricingPolicyStored(
     ctx: Ctx,
@@ -109,29 +110,9 @@ export async function farmingPolicyStored(
     newFarmingPolicy.immutable = farmingPolicyStoredEvent.immutable
     newFarmingPolicy.default = farmingPolicyStoredEvent.default
 
-    const certificationTypeAsString = farmingPolicyStoredEvent.nodeCertification.__kind.toString()
-    let nodeCertType = NodeCertification.Diy
-    switch (certificationTypeAsString) {
-        case 'Diy':
-            nodeCertType = NodeCertification.Diy
-            break
-        case 'Certified':
-            nodeCertType = NodeCertification.Certified
-            break
-    }
-    newFarmingPolicy.nodeCertification = nodeCertType
+    newFarmingPolicy.nodeCertification = parseNodeCertification(farmingPolicyStoredEvent.nodeCertification.__kind.toString())
 
-    const farmCertificationTypeAsString = farmingPolicyStoredEvent.farmCertification.__kind.toString()
-    let farmCertType = FarmCertification.NotCertified
-    switch (farmCertificationTypeAsString) {
-        case 'NotCertified':
-            farmCertType = FarmCertification.NotCertified
-            break
-        case 'Gold':
-            farmCertType = FarmCertification.Gold
-            break
-    }
-    newFarmingPolicy.farmCertification = farmCertType
+    newFarmingPolicy.farmCertification = parseFarmCertification(farmingPolicyStoredEvent.farmCertification.__kind.toString())
 
     await ctx.store.save<FarmingPolicy>(newFarmingPolicy)
 }
@@ -165,29 +146,9 @@ export async function farmingPolicyUpdated(
     savedPolicy.immutable = farmingPolicyUpdatedEvent.immutable
     savedPolicy.default = farmingPolicyUpdatedEvent.default
 
-    const certificationTypeAsString = farmingPolicyUpdatedEvent.nodeCertification.__kind.toString()
-    let nodeCertType = NodeCertification.Diy
-    switch (certificationTypeAsString) {
-        case 'Diy':
-            nodeCertType = NodeCertification.Diy
-            break
-        case 'Certified':
-            nodeCertType = NodeCertification.Certified
-            break
-    }
-    savedPolicy.nodeCertification = nodeCertType
+    savedPolicy.nodeCertification = parseNodeCertification(farmingPolicyUpdatedEvent.nodeCertification.__kind.toString())
 
-    const farmCertificationTypeAsString = farmingPolicyUpdatedEvent.farmCertification.__kind.toString()
-    let farmCertType = FarmCertification.NotCertified
-    switch (farmCertificationTypeAsString) {
-        case 'NotCertified':
-            farmCertType = FarmCertification.NotCertified
-            break
-        case 'Gold':
-            farmCertType = FarmCertification.Gold
-            break
-    }
-    savedPolicy.farmCertification = farmCertType
+    savedPolicy.farmCertification = parseFarmCertification(farmingPolicyUpdatedEvent.farmCertification.__kind.toString())
 
     await ctx.store.save<FarmingPolicy>(savedPolicy)
 }

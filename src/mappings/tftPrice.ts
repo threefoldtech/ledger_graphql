@@ -1,8 +1,6 @@
-import { Store } from '@subsquid/typeorm-store'
 import { Ctx } from '../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor';
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { In } from 'typeorm'
 import { TftPriceModulePriceStoredEvent, TftPriceModuleAveragePriceStoredEvent } from '../types/events';
 import { PriceStored, AveragePriceStored } from '../model';
 import { ParserFixPointFn, parseI16F16 } from '@encointer/util'
