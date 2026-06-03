@@ -9,12 +9,12 @@ via the `tfchainVersions.jsonl` append-only log and Subsquid's typegen tool.
 ### Key concepts
 
 - **`typegen/tfchainVersions.jsonl`** is an append-only log of runtime metadata
-  from all TFChain networks. It is committed to git and is the single source of
+  from all Ledger Chain networks. It is committed to git and is the single source of
   truth for type generation. Never delete or recreate this file — only append.
 
 - **`typegen/typesBundle.json`** is a frozen historical artifact that helps the
   metadata explorer decode pre-V14 runtime metadata (specVersions before ~v100).
-  TFChain now uses Polkadot SDK v1.1.0 with V14+ self-describing metadata, so
+  Ledger Chain now uses Polkadot SDK v1.1.0 with V14+ self-describing metadata, so
   **this file does not need editing for new runtime versions**. See
   [Notes on typesBundle.json](#notes-on-typesbundlejson) below.
 
@@ -38,7 +38,7 @@ known hash. The hash is derived from the event's SCALE-encoded type structure.
 
 ### Network deployment order matters
 
-TFChain follows the deployment pipeline: **devnet → qanet → testnet → mainnet**.
+Ledger Chain follows the deployment pipeline: **devnet → qanet → testnet → mainnet**.
 The JSONL file should be seeded in this order so that typegen assigns version
 labels matching the earliest deployment. The `seed-versions.sh` script handles
 this automatically.
@@ -270,7 +270,7 @@ fully self-describing. The types bundle tells the metadata explorer and typegen
 how to decode those custom pallet types. Without it, the explorer can't read
 metadata from blocks at those old specVersions.
 
-**Why it's frozen:** TFChain upgraded to Polkadot SDK v1.1.0, which uses V14+
+**Why it's frozen:** Ledger Chain upgraded to Polkadot SDK v1.1.0, which uses V14+
 self-describing metadata. Any new specVersion includes a complete type registry
 in its metadata — no external bundle needed. The types bundle only matters for
 the old pre-V14 blocks, which will never change.

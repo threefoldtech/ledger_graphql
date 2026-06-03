@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# seed-versions.sh — Discover all specVersions from TFChain networks
+# seed-versions.sh — Discover all specVersions from Ledger Chain networks
 #
 # Runs squid-substrate-metadata-explorer against each network and merges
 # discovered specVersions into the master tfchainVersions.jsonl file.
@@ -54,7 +54,7 @@ if [ ! -f "$MASTER" ]; then
     echo "Created empty master file: $MASTER"
 fi
 
-echo "=== TFChain specVersion Discovery ==="
+echo "=== Ledger Chain specVersion Discovery ==="
 echo "Master file: $MASTER"
 echo ""
 

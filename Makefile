@@ -25,7 +25,7 @@ version-bump:
 typegen:
 	npx squid-substrate-typegen typegen/typegen.json
 
-# Discover all specVersions from all TFChain networks (mainnet, testnet, qanet, devnet)
+# Discover all specVersions from all Ledger Chain networks (mainnet, testnet, qanet, devnet)
 typegen-seed:
 	./scripts/seed-versions.sh
 
