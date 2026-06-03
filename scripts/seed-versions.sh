@@ -15,7 +15,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 MASTER="$REPO_DIR/typegen/tfchainVersions.jsonl"
-TYPES_BUNDLE="$REPO_DIR/typegen/typesBundle.json"
 TMP_DIR=$(mktemp -d)
 
 # Network endpoints
@@ -34,12 +33,6 @@ cleanup() {
     rm -rf "$TMP_DIR"
 }
 trap cleanup EXIT
-
-if [ ! -f "$TYPES_BUNDLE" ]; then
-    echo "Error: typesBundle.json not found at $TYPES_BUNDLE"
-    echo "Restore it from indexer/typesBundle.json first."
-    exit 1
-fi
 
 # Determine which networks to scan
 if [ $# -gt 0 ]; then
@@ -72,7 +65,6 @@ for network in $SCAN_NETWORKS; do
 
     if npx squid-substrate-metadata-explorer \
         --chain "$endpoint" \
-        --typesBundle "$TYPES_BUNDLE" \
         --out "$outfile" 2>&1; then
 
         if [ -f "$outfile" ] && [ -s "$outfile" ]; then
