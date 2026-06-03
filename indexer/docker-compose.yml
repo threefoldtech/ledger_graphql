@@ -12,7 +12,7 @@ services:
       - "127.0.0.1:8080:8080"
     command: start-single-node --insecure
     volumes:
-      - /cockroach/cockroach-data
+      - cockroach-data:/cockroach/cockroach-data
 
   cockroachdb-init:
     depends_on:
@@ -75,3 +75,6 @@ services:
       DB_USER: "root"
     ports:
       - "4444:3000"
+
+volumes:
+  cockroach-data:
