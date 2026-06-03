@@ -79,13 +79,16 @@ export async function nodeStored(
     await ctx.store.save<Node>(newNode)
 
     const pubConfig = getNodePublicConfig(ctx, node)
-    const newPubConfig = new PublicConfig()
-    newPubConfig.id = item.event.id
-    newPubConfig.ipv4 = pubConfig?.ip4
-    newPubConfig.gw4 = pubConfig?.gw4
-    newPubConfig.ipv6 = pubConfig?.ip6
-    newPubConfig.gw6 = pubConfig?.gw6
-    newPubConfig.node = newNode
+    if (pubConfig) {
+        const newPubConfig = new PublicConfig()
+        newPubConfig.id = item.event.id
+        newPubConfig.ipv4 = pubConfig.ip4
+        newPubConfig.gw4 = pubConfig.gw4
+        newPubConfig.ipv6 = pubConfig.ip6
+        newPubConfig.gw6 = pubConfig.gw6
+        newPubConfig.node = newNode
+        await ctx.store.save<PublicConfig>(newPubConfig)
+    }
 
     if (node.isV43) {
         const nodeAsV43 = node.asV43
@@ -136,9 +139,9 @@ export async function nodeStored(
 
     newNode.interfaces = []
 
-    const interfacesPromisses = nodeEvent.interfaces.map(async intf => {
+    const interfacesPromisses = nodeEvent.interfaces.map(async (intf, index) => {
         const newInterface = new Interfaces()
-        newInterface.id = item.event.id
+        newInterface.id = item.event.id + '-' + index
         newInterface.node = newNode
         newInterface.name = validateString(ctx, intf.name.toString())
         newInterface.mac = validateString(ctx, intf.mac.toString())
@@ -325,9 +328,9 @@ export async function nodeUpdated(
     await ctx.store.remove(nodeIfs)
 
     // Save ones from update event
-    await Promise.all(nodeEvent.interfaces.map(async intf => {
+    await Promise.all(nodeEvent.interfaces.map(async (intf, index) => {
         const newInterface = new Interfaces()
-        newInterface.id = item.event.id + validateString(ctx, intf.name.toString())
+        newInterface.id = item.event.id + '-' + index
         newInterface.name = validateString(ctx, intf.name.toString())
         newInterface.mac = validateString(ctx, intf.mac.toString())
         newInterface.ips = intf.ips.map(ip => validateString(ctx, ip.toString())).join(',')
@@ -462,8 +465,9 @@ async function handlePublicConfigV105(ctx: Ctx, eventID: string, nodeID: number,
     if (!config) {
         const pubConfig = await ctx.store.get(PublicConfig, { where: { node: { nodeID } }, relations: { node: true } })
         if (pubConfig) {
-            return await ctx.store.remove(pubConfig)
+            await ctx.store.remove(pubConfig)
         }
+        return
     }
 
     const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true, interfaces: true } })

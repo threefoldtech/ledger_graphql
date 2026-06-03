@@ -469,6 +469,11 @@ export async function contractGracePeriodStarted(
         contractID = contractGracePeriodStartedEvent.asV105.contractId
     }
 
+    if (contractID === undefined) {
+        ctx.log.error({ eventName: item.name }, `found ContractGracePeriodStarted with unknown version! make sure types are updated`);
+        return
+    }
+
     const savedNodeContract = await ctx.store.get(NodeContract, { where: { contractID } })
     if (savedNodeContract) {
         savedNodeContract.state = ContractState.GracePeriod
@@ -503,6 +508,11 @@ export async function contractGracePeriodEnded(
         contractID = contractGracePeriodEnded.asV59[0]
     } else if (contractGracePeriodEnded.isV105) {
         contractID = contractGracePeriodEnded.asV105.contractId
+    }
+
+    if (contractID === undefined) {
+        ctx.log.error({ eventName: item.name }, `found ContractGracePeriodEnded with unknown version! make sure types are updated`);
+        return
     }
 
     const savedNodeContract = await ctx.store.get(NodeContract, { where: { contractID } })
