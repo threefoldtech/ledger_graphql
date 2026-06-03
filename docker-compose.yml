@@ -10,7 +10,7 @@ services:
     ports:
       - "127.0.0.1:${DB_PORT}:5432"
     volumes:
-      - /var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
@@ -48,3 +48,6 @@ services:
       - 4000:4000
     depends_on:
       - db
+
+volumes:
+  postgres-data:
