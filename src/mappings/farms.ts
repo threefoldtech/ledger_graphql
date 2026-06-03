@@ -204,6 +204,10 @@ export async function farmUpdated(
         }
     }
 
+    if ('dedicatedFarm' in farmUpdatedEventParsed) {
+        savedFarm.dedicatedFarm = (farmUpdatedEventParsed as any).dedicatedFarm
+    }
+
     await ctx.store.save<Farm>(savedFarm)
 
     const publicIPsOfFarm = await ctx.store.find<PublicIp>(PublicIp, { where: { farm: { id: savedFarm.id } }, relations: { farm: true } })
@@ -214,12 +218,6 @@ export async function farmUpdated(
             ctx.log.debug({ eventName: item.name, ip: ip.ip.toString() }, `PublicIP: ${ip.ip.toString()} in farm: ${savedFarm.farmID} removed from publicIPs`);
         }
     }
-
-    let farm = item.event.args as Farm
-    if (farm.dedicatedFarm) {
-        savedFarm.dedicatedFarm = farm.dedicatedFarm
-    }
-    await ctx.store.save<Farm>(savedFarm)
 
 }
 
