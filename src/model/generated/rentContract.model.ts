@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
 import {ContractState} from "./_contractState"
 
@@ -14,15 +14,19 @@ export class RentContract {
     @Column_("int4", {nullable: false})
     gridVersion!: number
 
+    @Index_()
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     contractID!: bigint
 
+    @Index_()
     @Column_("int4", {nullable: false})
     twinID!: number
 
+    @Index_()
     @Column_("int4", {nullable: false})
     nodeID!: number
 
+    @Index_()
     @Column_("varchar", {length: 11, nullable: false})
     state!: ContractState
 

@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
 import {FarmCertification} from "./_farmCertification"
 import {PublicIp} from "./publicIp.model"
 
@@ -14,12 +14,15 @@ export class Farm {
     @Column_("int4", {nullable: false})
     gridVersion!: number
 
+    @Index_()
     @Column_("int4", {nullable: false})
     farmID!: number
 
+    @Index_()
     @Column_("text", {nullable: false})
     name!: string
 
+    @Index_()
     @Column_("int4", {nullable: false})
     twinID!: number
 
@@ -35,6 +38,7 @@ export class Farm {
     @Column_("text", {nullable: true})
     stellarAddress!: string | undefined | null
 
+    @Index_()
     @Column_("bool", {nullable: true})
     dedicatedFarm!: boolean | undefined | null
 }
