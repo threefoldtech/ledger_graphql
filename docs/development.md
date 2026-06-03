@@ -1,4 +1,4 @@
-# Developing on TFChain GraphQL
+# Developing on Ledger GraphQL
 
 ## Install
 
@@ -9,7 +9,7 @@ npm run build
 
 ## Local Network
 
-### Run TFChain
+### Run Ledger Chain
 
 See https://github.com/threefoldtech/tfchain
 
@@ -23,7 +23,7 @@ docker network create tfgrid_bknd
 
 ### Run Indexer
 
-Check `indexer/.env` and adjust the websocket endpoint to your local TFChain address.
+Check `indexer/.env` and adjust the websocket endpoint to your local Ledger Chain address.
 
 ```bash
 cd indexer
@@ -36,7 +36,7 @@ Indexer services should now be started. Check if it's syncing properly by stream
 docker logs indexer-ingest-1 -f
 ```
 
-You should see TFChain blocks being processed:
+You should see Ledger Chain blocks being processed:
 
 ![Indexer logs](https://user-images.githubusercontent.com/73958772/209998096-3d5381d9-97ee-438d-824d-d92d997b42aa.png)
 
@@ -60,7 +60,7 @@ npm run db:up
 npm run process
 ```
 
-You should see TFChain blocks being processed by the processor:
+You should see Ledger Chain blocks being processed by the processor:
 
 ![Processor logs](https://user-images.githubusercontent.com/73958772/210000023-c575d91a-382e-4fdc-85b3-199a135b493f.png)
 
@@ -86,7 +86,7 @@ Now you can use the GraphQL playground at http://localhost:4000/graphql
 
 ## Adding New Runtime Versions
 
-When TFChain has a new spec version with type changes, see [typeChanges.md](./typeChanges.md) for the full workflow. The short version:
+When Ledger Chain has a new spec version with type changes, see [typeChanges.md](./typeChanges.md) for the full workflow. The short version:
 
 ```bash
 # Point at your local chain (or a remote network via WS_URL=wss://...)

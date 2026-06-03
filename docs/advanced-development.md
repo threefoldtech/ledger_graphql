@@ -4,7 +4,7 @@ This document covers the internal architecture of the tfchain_graphql indexer/pr
 
 ## 1. Pre-V14 Metadata and the typesBundle
 
-Substrate runtime metadata comes in different versions. TFChain has two eras:
+Substrate runtime metadata comes in different versions. Ledger Chain has two eras:
 
 - **V12 (pre-V14)**: metadata is NOT self-describing for custom types. The `typesBundle.json` file provides type definitions that tell the decoder how to interpret SCALE-encoded data.
 - **V14+**: metadata is self-describing. All type information is embedded in the metadata itself. The typesBundle is not used.

@@ -13,7 +13,7 @@
 
 | Script | Description |
 |--------|-------------|
-| `seed-versions.sh` | Discover all specVersions from all TFChain networks (devnet, qanet, testnet, mainnet) and populate `typegen/tfchainVersions.jsonl`. Used for initial seeding or recovery. |
+| `seed-versions.sh` | Discover all specVersions from all Ledger Chain networks (devnet, qanet, testnet, mainnet) and populate `typegen/tfchainVersions.jsonl`. Used for initial seeding or recovery. |
 | `merge-versions.js` | Append-only merger for JSONL files. Merges new specVersions into the existing version log, sorted by specVersion. Used by `make typegen-add`. |
 
 ## Data Files

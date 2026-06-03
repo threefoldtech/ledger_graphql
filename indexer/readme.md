@@ -19,7 +19,7 @@ START_HEIGHT=0
 
 | Variable | Description |
 |----------|-------------|
-| `WS_ENDPOINT` | TFChain node WebSocket URL. e.g., `wss://tfchain.dev.grid.tf` or `ws://localhost:9944` |
+| `WS_ENDPOINT` | Ledger Chain node WebSocket URL. e.g., `wss://tfchain.dev.grid.tf` or `ws://localhost:9944` |
 | `START_HEIGHT` | Block height to start ingesting from. `0` = genesis (full history). Setting this higher skips earlier blocks — the processor will miss any events before this height. Only use non-zero values for testing or partial deployments. |
 
 ## Docker Compose
@@ -41,7 +41,7 @@ docker compose down
 | Container | Image | Role |
 |-----------|-------|------|
 | cockroachdb | `cockroachdb/cockroach` | Database for storing raw indexed block data |
-| ingest | `subsquid/substrate-ingest` | Connects to the TFChain node and ingests blocks into the database |
+| ingest | `subsquid/substrate-ingest` | Connects to the Ledger Chain node and ingests blocks into the database |
 | gateway | `subsquid/substrate-gateway` | GraphQL gateway over ingested data — the processor queries this |
 | explorer | `subsquid/substrate-explorer` | Web UI to browse raw ingested data and check sync status |
 

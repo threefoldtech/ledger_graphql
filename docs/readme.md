@@ -1,4 +1,4 @@
-# TFChain GraphQL Documentation
+# Ledger GraphQL Documentation
 
 ## Development
 

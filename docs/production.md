@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- TFChain network WebSocket URL (e.g., `wss://tfchain.dev.grid.tf/ws`)
+- Ledger Chain network WebSocket URL (e.g., `wss://tfchain.dev.grid.tf/ws`)
 - Docker
 - Docker Compose
 
@@ -10,7 +10,7 @@
 
 The production stack has two independent layers:
 
-1. **Indexer (archive)** — ingests raw blocks from a TFChain node into CockroachDB. Provides a GraphQL gateway for the processor to query block data.
+1. **Indexer (archive)** — ingests raw blocks from a Ledger Chain node into CockroachDB. Provides a GraphQL gateway for the processor to query block data.
 2. **Processor + Query Node** — reads events from the indexer, maps them to domain entities (nodes, farms, contracts, etc.), stores in PostgreSQL, and serves the public GraphQL API.
 
 ## Run the Setup
@@ -53,7 +53,7 @@ Configure `indexer/.env`:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `WS_ENDPOINT` | TFChain node WebSocket URL | `ws://localhost:9944` |
+| `WS_ENDPOINT` | Ledger Chain node WebSocket URL | `ws://localhost:9944` |
 | `START_HEIGHT` | Block height to start ingesting from. `0` = genesis (full history). Set higher only for testing or partial deployments — the processor will miss events before this height. | `0` |
 
 ```bash
@@ -74,7 +74,7 @@ Configure `.env` in the project root:
 | `DB_PASS` | PostgreSQL password | `postgres` |
 | `DB_PORT` | PostgreSQL port | `5432` |
 | `INDEXER_ENDPOINT_URL` | Indexer GraphQL gateway URL. Use `http://gateway:8000/graphql` for Docker (shared network), `http://localhost:8888/graphql` for local dev | `http://gateway:8000/graphql` |
-| `WS_URL` | TFChain node WebSocket URL (used for RPC calls) | `wss://tfchain.dev.grid.tf/ws` |
+| `WS_URL` | Ledger Chain node WebSocket URL (used for RPC calls) | `wss://tfchain.dev.grid.tf/ws` |
 | `TYPEORM_LOGGING` | TypeORM log level | `error` |
 
 ```bash
