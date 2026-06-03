@@ -72,7 +72,14 @@ export async function nodeStored(
 
     newNode.created = Number(nodeEvent.created)
     newNode.farmingPolicyId = nodeEvent.farmingPolicyId
-    newNode.certification = NodeCertification.Diy
+    newNode.certification = NodeCertification.Diy // v9 default; overridden below for v28+
+
+    if (node.isV28) {
+        const nodeAsV28 = node.asV28
+        newNode.certification = nodeAsV28.certificationType
+            ? parseNodeCertification(nodeAsV28.certificationType.__kind.toString())
+            : NodeCertification.Diy
+    }
 
     const newLocation = new Location()
     newLocation.id = item.event.id
@@ -103,6 +110,9 @@ export async function nodeStored(
         newNode.secure = nodeAsV43.secureBoot ? true : false
         newNode.virtualized = nodeAsV43.virtualized ? true : false
         newNode.serialNumber = validateString(ctx, nodeAsV43.serialNumber.toString())
+        newNode.certification = nodeAsV43.certificationType
+            ? parseNodeCertification(nodeAsV43.certificationType.__kind.toString())
+            : NodeCertification.Diy
     }
 
     if (node.isV63 || node.isV105) {
@@ -120,6 +130,9 @@ export async function nodeStored(
         newNode.virtualized = nodeEvent.virtualized ? true : false
         newNode.serialNumber = validateString(ctx, nodeEvent.serialNumber.toString())
         newNode.connectionPrice = nodeEvent.connectionPrice
+        newNode.certification = nodeEvent.certification
+            ? parseNodeCertification(nodeEvent.certification.__kind.toString())
+            : NodeCertification.Diy
     }
 
     if (node.isV118) {
@@ -130,6 +143,9 @@ export async function nodeStored(
         newNode.virtualized = nodeEvent.virtualized ? true : false
         newNode.serialNumber = nodeEvent.serialNumber ? validateString(ctx, nodeEvent.serialNumber.toString()) : 'Unknown'
         newNode.connectionPrice = nodeEvent.connectionPrice
+        newNode.certification = nodeEvent.certification
+            ? parseNodeCertification(nodeEvent.certification.__kind.toString())
+            : NodeCertification.Diy
     }
 
     await ctx.store.save<Node>(newNode)
